@@ -1,0 +1,25 @@
+README.md
+  s_21a29b80f34006::t_b53a68b45e97b2 64
+skills/fkb/SKILL.md
+  s_21a29b80f34006::t_b53a68b45e97b2 56
+skills/fkb/scripts/manifest.test.mjs
+  s_21a29b80f34006::t_b53a68b45e97b2 36-37,49,108,117,121,125-126,130,134
+workspace.okf.yaml.example
+  s_21a29b80f34006::t_b53a68b45e97b2 37-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "50ab50d0a39508625970ef332fbf7f7c587c3056",
+  "prompts": {},
+  "sessions": {
+    "s_21a29b80f34006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fbae76ba5ffeeBtbvJF5DHr6EL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
