@@ -1,0 +1,47 @@
+# workspace.okf.yaml — the SOLE coupling point between OKF bundles.
+#
+# Copy this file to `workspace.okf.yaml` and edit it. It is the ONLY artifact
+# that knows your bundles are related; each bundle stays an independent OKF repo,
+# unaware of the others. All federation policy lives here.
+#
+# Validate after editing:
+#   node skills/fkb/scripts/manifest.mjs validate
+#   node skills/fkb/scripts/manifest.mjs list
+#
+# Four fields per bundle. BOTH security-relevant defaults FAIL CLOSED — an
+# unconfigured bundle is sealed (referenceable_by: []) and read-only
+# (writable: false) until you deliberately open each axis.
+#
+#   path             (required)  local checkout of the bundle root — usually a
+#                                `docs/` subdir (MkDocs layout). Read-side
+#                                resolution: a cited upstream URL that maps to a
+#                                local path is resolved locally, not fetched.
+#   referenceable_by (default [])  THE LEAK RULE. Inbound-only allow-list: who
+#                                may point AT me. "*" = anyone; [] = no one.
+#                                A bundle may always reference itself.
+#   writable         (default false)  may an agent author into this bundle here.
+#   publish          (default null)   my published URL base, if any. Used to emit
+#                                cross-bundle links as real URLs (no `docs/`
+#                                segment — MkDocs strips it). null = keep links local.
+#
+# THE REFERENCE RULE (enforced by manifest.mjs can-reference):
+#   A concept in bundle A may reference a concept in bundle B
+#     iff  A === B  OR  A ∈ B.referenceable_by
+#
+bundles:
+  # Public: the shared foundation. Anyone may reference it; it is published.
+  public:   { path: ./public/docs,   referenceable_by: "*",        writable: true,  publish: https://me.example/kb }
+
+  # Two mutual, unranked peers: each lists the other. Symmetric, order-free —
+  # something a ranked sensitivity lattice could not express.
+  peer:     { path: ./peer/docs,     referenceable_by: [team],     writable: true }
+  team:     { path: ./team/docs,     referenceable_by: [peer],     writable: true }
+
+  # Private: sealed. referenceable_by [] means no other bundle may ever point at
+  # it, so its content cannot surface where it may not be seen.
+  private:  { path: ./private/docs,  referenceable_by: [],         writable: true }
+
+  # A read-only upstream someone else owns: freely read and referenced, never
+  # authored into. writable:false yet fully referenceable. Record cross-refs into
+  # it as OKF sources[] provenance too, since you cannot fix a link you don't own.
+  upstream_public: { path: ./upstream_public/docs, referenceable_by: "*", writable: false, publish: https://them.example/kb }
