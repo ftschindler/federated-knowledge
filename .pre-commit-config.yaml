@@ -94,6 +94,12 @@ repos:
     hooks:
       - id: actionlint
 
+  # Makefile linting
+  - repo: https://github.com/mrtazz/checkmake
+    rev: 59931d556f8f5cf4fbacf2c8390a8122ef7a881d  # frozen: v0.3.2
+    hooks:
+      - id: checkmake
+
   # Validate config files against their published JSON schema
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 12e63946db2c5cfcc9030fac21c3883ba88c6ed8  # frozen: 0.38.0
@@ -151,7 +157,7 @@ repos:
         entry: Filename must be lowercase with no whitespace
         language: fail
         files: "[\\sA-Z]"
-        exclude: "^(README\\.md|LICENSE|SKILL\\.md|.*/SKILL\\.md)$"
+        exclude: "^(README\\.md|LICENSE|Makefile|SKILL\\.md|.*/SKILL\\.md)$"
 
   # ---- general text hygiene (run LAST so it cleans up after everything) --
 

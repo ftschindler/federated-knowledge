@@ -75,7 +75,8 @@ node skills/fkb/scripts/manifest.mjs check-kb                  # exit 0 all kb p
 node skills/fkb/scripts/manifest.mjs validate                  # exit 0 well-formed / 2 malformed
 ```
 
-Tests: `node tests/manifest.test.mjs`.
+Tests: `make test` (or `node --test 'tests/**/*.test.mjs'`). Run `make help` for
+all tasks.
 
 ## What lives elsewhere
 
