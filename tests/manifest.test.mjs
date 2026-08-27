@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // manifest.test.mjs — behavior lock for the fkb manifest core.
-// Run: node manifest.test.mjs   (uses node:test, zero external deps)
+// Run: node tests/manifest.test.mjs   (uses node:test, zero external deps)
 
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -17,7 +17,7 @@ import {
   isKbInstalled,
   KB_SKILLS,
   loadWorkspace,
-} from "./manifest.mjs";
+} from "../skills/fkb/scripts/manifest.mjs";
 
 // --- helpers ---------------------------------------------------------------
 

@@ -75,7 +75,7 @@ node skills/fkb/scripts/manifest.mjs check-kb                  # exit 0 all kb p
 node skills/fkb/scripts/manifest.mjs validate                  # exit 0 well-formed / 2 malformed
 ```
 
-Tests: `node skills/fkb/scripts/manifest.test.mjs`.
+Tests: `node tests/manifest.test.mjs`.
 
 ## What lives elsewhere
 

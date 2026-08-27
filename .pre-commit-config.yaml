@@ -123,15 +123,15 @@ repos:
       # core regresses. Guard invariants at commit-time, not review-time.
       - id: fkb-manifest-tests
         name: fkb manifest.mjs tests
-        entry: node skills/fkb/scripts/manifest.test.mjs
+        entry: node tests/manifest.test.mjs
         language: system
-        files: ^skills/fkb/scripts/manifest\.(mjs|test\.mjs)$
+        files: ^(skills/fkb/scripts/manifest\.mjs|tests/manifest\.test\.mjs)$
         pass_filenames: false
 
       # Every committed SKILL.md must be skills.sh-discoverable: name + description.
       - id: skill-frontmatter
         name: SKILL.md has name + description frontmatter
-        entry: node skills/fkb/scripts/check-skill-frontmatter.mjs
+        entry: node .scripts/check-skill-frontmatter.mjs
         language: system
         files: ^skills/.*/SKILL\.md$
         pass_filenames: true
