@@ -1,0 +1,28 @@
+.scripts/check_mailmap.py
+  s_21a29b80f34006::t_1c446b7bdf225d 18-20,43-45,62-64
+  s_21a29b80f34006::t_d7fbda28938c1d 1-17,21-42,46-61,65-66
+.pre-commit-config.yaml
+  s_21a29b80f34006::t_46cbc39843767c 71-78
+  s_21a29b80f34006::t_19739581464138 139-147
+.mailmap
+  s_21a29b80f34006::t_7983285c1d76b8 10
+  s_21a29b80f34006::t_e0eab390b63563 1-9
+.github/workflows/governance.yml
+  s_21a29b80f34006::t_3cbb0487382cd4 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "ffbf3828e580d29ccc0674366ab8e74a6a4a7a6e",
+  "prompts": {},
+  "sessions": {
+    "s_21a29b80f34006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fbae76ba5ffeeBtbvJF5DHr6EL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
