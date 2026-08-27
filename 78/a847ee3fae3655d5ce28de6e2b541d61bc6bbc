@@ -1,0 +1,27 @@
+README.md
+  s_21a29b80f34006::t_023670f80e4c62 78-79
+Makefile
+  s_21a29b80f34006::t_fd9db6d62330d0 5-7
+  s_21a29b80f34006::t_f3081c1ef2f4a5 1-4,8-22
+.pre-commit-config.yaml
+  s_21a29b80f34006::t_b8d7a782d73aa9 97-102
+  s_21a29b80f34006::t_94178ed56cb063 160
+checkmake.ini
+  s_21a29b80f34006::t_c91e9c3b311067 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "78a847ee3fae3655d5ce28de6e2b541d61bc6bbc",
+  "prompts": {},
+  "sessions": {
+    "s_21a29b80f34006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fbae76ba5ffeeBtbvJF5DHr6EL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
