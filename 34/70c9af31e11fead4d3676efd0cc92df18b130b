@@ -1,0 +1,24 @@
+tests/manifest.test.mjs
+  s_21a29b80f34006::t_4304972cc32677 20
+  s_21a29b80f34006::t_fb44b735ec0520 4
+.pre-commit-config.yaml
+  s_21a29b80f34006::t_c2a7f2cbdf24b5 126,128,134
+README.md
+  s_21a29b80f34006::t_4d5c3c06986fbe 78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "3470c9af31e11fead4d3676efd0cc92df18b130b",
+  "prompts": {},
+  "sessions": {
+    "s_21a29b80f34006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fbae76ba5ffeeBtbvJF5DHr6EL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
