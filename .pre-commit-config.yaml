@@ -99,6 +99,9 @@ repos:
     rev: 59931d556f8f5cf4fbacf2c8390a8122ef7a881d  # frozen: v0.3.2
     hooks:
       - id: checkmake
+        # checkmake only auto-discovers a non-dot `checkmake.ini`; point it at
+        # the hidden config explicitly.
+        args: ["--config=.checkmake.ini"]
 
   # Validate config files against their published JSON schema
   - repo: https://github.com/python-jsonschema/check-jsonschema
