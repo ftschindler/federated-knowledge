@@ -1,0 +1,56 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["ruamel.yaml>=0.18"]
+# ///
+"""add-bundle — register an already-checked-out OKF bundle, in place (never moved).
+
+Usage:
+  add-bundle <name> <path> [referenceable_by] [--writable] [--publish URL]
+
+The path is taken as-is (make it absolute to onboard a checkout anywhere on disk).
+Absent writable/publish are prompted for interactively, else fail-closed.
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import _fkb_bundle as fkb
+import manifest
+
+_MIN_ARGC = 2
+
+
+def main(argv: list[str]) -> None:
+    args = [a for a in argv if not a.startswith("--")]
+    writable = True if "--writable" in argv else None
+    publish = None
+    if "--publish" in argv:
+        idx = argv.index("--publish")
+        publish = argv[idx + 1] if idx + 1 < len(argv) else None
+
+    if len(args) < _MIN_ARGC:
+        sys.stderr.write("usage: add-bundle <name> <path> [referenceable_by] [--writable] [--publish URL]\n")
+        sys.exit(manifest.Exit.USAGE)
+
+    name, raw_path = args[0], args[1]
+    referenceable_by = fkb.parse_referenceable_by(args[2]) if len(args) > _MIN_ARGC else None
+
+    manifest_path, _root = fkb.workspace_root_or_die()
+
+    if not Path(raw_path).expanduser().exists():
+        sys.stderr.write(f"warning: {raw_path} does not exist yet — registering anyway\n")
+
+    policy = fkb.ask_policy(referenceable_by, writable, publish, default_writable=False)
+    try:
+        manifest.add_bundle(manifest_path, name, raw_path, policy)
+    except manifest.ManifestError as exc:
+        sys.stderr.write(f"manifest error: {exc}\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    fkb.report_added(name, raw_path, policy, manifest_path)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

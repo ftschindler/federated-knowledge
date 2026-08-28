@@ -1,0 +1,91 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["ruamel.yaml>=0.18"]
+# ///
+"""clone-bundle — clone a remote OKF bundle under workspace_root and register it.
+
+Usage:
+  clone-bundle <url> <name> [referenceable_by] [--writable] [--publish URL]
+
+Clones the repo to <workspace_root>/<name>, discovers the OKF root (the directory
+of the top-most index.md) and records that as the bundle's path. Absent
+writable/publish are prompted for, else fail-closed. Cloned bundles default to
+writable:false (someone else's repo is a source, not a write target) unless asked.
+"""
+
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+import _fkb_bundle as fkb
+import manifest
+
+_MIN_ARGC = 2
+
+
+def _clone(url: str, dest: Path) -> None:
+    if dest.exists():
+        sys.stderr.write(f"error: {dest} already exists — remove it or pick another name\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    result = subprocess.run(
+        ["git", "clone", "--quiet", url, str(dest)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        sys.stderr.write(f"git clone failed:\n{result.stderr}\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+
+
+def _discover_subdir(checkout: Path, workspace_root: Path) -> str:
+    okf_root = fkb.find_okf_root(checkout)
+    if okf_root is None:
+        default = str(checkout.relative_to(workspace_root))
+        chosen = fkb.ask("Could not find a unique index.md. Knowledge subdir (relative to clone)", ".")
+        return default if chosen == "." else str((checkout / chosen).relative_to(workspace_root))
+    default_rel = str(okf_root.relative_to(workspace_root))
+    confirmed = fkb.ask("Knowledge subdir (relative to workspace_root)", default_rel)
+    return confirmed
+
+
+def main(argv: list[str]) -> None:
+    args = [a for a in argv if not a.startswith("--")]
+    writable = True if "--writable" in argv else None
+    publish = None
+    if "--publish" in argv:
+        idx = argv.index("--publish")
+        publish = argv[idx + 1] if idx + 1 < len(argv) else None
+
+    if len(args) < _MIN_ARGC:
+        sys.stderr.write("usage: clone-bundle <url> <name> [referenceable_by] [--writable] [--publish URL]\n")
+        sys.exit(manifest.Exit.USAGE)
+
+    url, name = args[0], args[1]
+    referenceable_by = fkb.parse_referenceable_by(args[2]) if len(args) > _MIN_ARGC else None
+
+    manifest_path, root = fkb.workspace_root_or_die()
+    if root is None:
+        sys.stderr.write("error: clone-bundle needs a workspace_root to clone into; set one in the manifest\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    workspace_root = Path(root).expanduser()
+    workspace_root.mkdir(parents=True, exist_ok=True)
+
+    checkout = workspace_root / name
+    _clone(url, checkout)
+    subdir = _discover_subdir(checkout, workspace_root)
+
+    policy = fkb.ask_policy(referenceable_by, writable, publish, default_writable=False)
+    try:
+        manifest.add_bundle(manifest_path, name, subdir, policy)
+    except manifest.ManifestError as exc:
+        sys.stderr.write(f"manifest error: {exc}\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    fkb.report_added(name, subdir, policy, manifest_path)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

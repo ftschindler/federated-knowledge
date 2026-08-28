@@ -1,0 +1,78 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["ruamel.yaml>=0.18"]
+# ///
+"""create-bundle — scaffold a new OKF bundle under workspace_root and register it.
+
+Usage:
+  create-bundle <name> [referenceable_by] [--writable] [--publish URL]
+
+Scaffolds a conformant OKF bundle via kb-init at <workspace_root>/<name>, then
+registers it. A bundle you author into defaults to writable:true and the sealed
+referenceable_by:[]; both prompted for when absent and interactive.
+
+kb-init is a skill (prose), not a callable binary, so this script scaffolds a
+minimal OKF bundle directly and reports that the fkb-init skill should invoke
+kb-init for full conformance when driven by an agent.
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import _fkb_bundle as fkb
+import manifest
+
+_MIN_ARGC = 1
+
+
+def _scaffold_okf(bundle_dir: Path, name: str) -> None:
+    """Write a minimal OKF bundle (index.md + log.md). Full conformance is kb-init's job."""
+    bundle_dir.mkdir(parents=True, exist_ok=True)
+    index = bundle_dir / "index.md"
+    if not index.exists():
+        index.write_text(f"# {name}\n\nAn OKF knowledge bundle.\n", encoding="utf-8")
+    log = bundle_dir / "log.md"
+    if not log.exists():
+        log.write_text("# Log\n", encoding="utf-8")
+
+
+def main(argv: list[str]) -> None:
+    args = [a for a in argv if not a.startswith("--")]
+    writable = False if "--no-writable" in argv else None
+    publish = None
+    if "--publish" in argv:
+        idx = argv.index("--publish")
+        publish = argv[idx + 1] if idx + 1 < len(argv) else None
+
+    if len(args) < _MIN_ARGC:
+        sys.stderr.write("usage: create-bundle <name> [referenceable_by] [--publish URL]\n")
+        sys.exit(manifest.Exit.USAGE)
+
+    name = args[0]
+    referenceable_by = fkb.parse_referenceable_by(args[1]) if len(args) > _MIN_ARGC else None
+
+    manifest_path, root = fkb.workspace_root_or_die()
+    if root is None:
+        sys.stderr.write("error: create-bundle needs a workspace_root to scaffold into; set one in the manifest\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    workspace_root = Path(root).expanduser()
+
+    bundle_dir = workspace_root / name
+    _scaffold_okf(bundle_dir, name)
+
+    if writable is None:
+        writable = True
+    policy = fkb.ask_policy(referenceable_by, writable, publish, default_writable=True)
+    try:
+        manifest.add_bundle(manifest_path, name, name, policy)
+    except manifest.ManifestError as exc:
+        sys.stderr.write(f"manifest error: {exc}\n")
+        sys.exit(manifest.Exit.BAD_MANIFEST)
+    fkb.report_added(name, name, policy, manifest_path)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
