@@ -1,0 +1,23 @@
+skills/fkb/scripts/install-glue
+  s_e1e00713a8da84::t_248b6e73355af0 36-43
+tests/test_bundle_commands.py
+  s_e1e00713a8da84::t_dfb56fb43543b0 31-35,48,51,53,58
+  s_e1e00713a8da84::t_23bb6ab2e2f753 70,74,76,82,85,87,91,94-95,103-104,108,135,137,140-141,146,148,150,155,158
+  s_e1e00713a8da84::t_26d536822b7c04 62-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "231a2c49765ca836a497bd33b8952f8de9882d8d",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
