@@ -1,10 +1,8 @@
-# Governance: run the EXACT same guard suite locally and in CI, so "passes
-# locally" and "passes CI" mean the same thing. CI is the boundary that can't be
-# bypassed with `git commit --no-verify`.
-#
-# GitHub Actions are pinned to full commit SHAs (immutable) with the human tag in
-# a trailing comment; Dependabot bumps them.
-name: governance
+---
+name: Governance
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -12,23 +10,32 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
+concurrency:
+  group: governance_${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
-  guards:
-    name: pre-commit suite
+  governance:
+    name: 🩺 (run governance checks)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash -elo pipefail {0}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
-        with:
-          node-version: "24"
+    - name: Setup node
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+      with:
+        node-version: "24"
 
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+    - name: Setup uv
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
 
-      # Run the whole .pre-commit-config.yaml against every file — the same set
-      # developers run locally, by construction (no reimplemented CI subset).
-      - name: Run pre-commit suite (prek)
-        run: uvx prek run --all-files --show-diff-on-failure
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Run pre-commit hooks
+      run: uv run --frozen --all-groups prek run --show-diff-on-failure --color=always --all-files

@@ -1,15 +1,16 @@
+---
 dirs:
-  - .
+- .
 fileExtensions:
-  - md
+- md
 useGitIgnore: true
 ignorePatterns:
-  - pattern: '^mailto:'
-  - pattern: '^https://me\.example/.*'  # placeholder URL in workspace.okf.yaml.example
-  - pattern: '^https://them\.example/.*'  # placeholder upstream URL in docs
+- pattern: '^mailto:'
+- pattern: '^https://me\.example/.*'  # placeholder URL in workspace.okf.yaml.example
+- pattern: '^https://them\.example/.*'  # placeholder upstream URL in docs
 aliveStatusCodes:
-  - 200
-  - 206
-  - 429  # rate-limited, but the target exists
+- 200
+- 206
+- 429  # rate-limited, but the target exists
 timeout: 10000
 retryCount: 3
