@@ -1,0 +1,27 @@
+tests/test_bundle_commands.py
+  s_e1e00713a8da84::t_ce5d0ecc255b1d 1-154
+skills/fkb/scripts/_fkb_bundle.py
+  s_e1e00713a8da84::t_91a71f4048f48b 1-93
+skills/fkb/scripts/add-bundle
+  s_e1e00713a8da84::t_7819035773fa81 1-56
+skills/fkb/scripts/clone-bundle
+  s_e1e00713a8da84::t_001c15f2ee6fd9 1-91
+skills/fkb/scripts/create-bundle
+  s_e1e00713a8da84::t_4dd61939da1764 1-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "696c85de9a8f775571f856163b8923e609c67011",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
