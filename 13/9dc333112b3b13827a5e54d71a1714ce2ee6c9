@@ -1,0 +1,41 @@
+Makefile
+  s_e1e00713a8da84::t_0f2cd8322c919b 19-20
+  s_e1e00713a8da84::t_5a84db82e2ab3e 42
+skills/fkb-query/SKILL.md
+  s_e1e00713a8da84::t_b4609fa5cc3c58 22,30,54
+skills/fkb-ingest/SKILL.md
+  s_e1e00713a8da84::t_b4609fa5cc3c58 21,30,49,62
+skills/fkb-init/SKILL.md
+  s_e1e00713a8da84::t_68da2002910fa2 4-8,11,14,16-18,26-27,29-30,32,34,36-38,40-41,43-45,47,49-51,53-86,88,90,93,96,100,102-103
+  s_e1e00713a8da84::t_b4609fa5cc3c58 23
+skills/fkb/SKILL.md
+  s_e1e00713a8da84::t_b899f46fa2ea30 29-32,34-36
+  s_e1e00713a8da84::t_b4609fa5cc3c58 26,45-48
+.pre-commit-config.yaml
+  s_e1e00713a8da84::t_27eb3f1ba824e7 133,135-136,138
+skills/fkb-promote/SKILL.md
+  s_e1e00713a8da84::t_b4609fa5cc3c58 23,31-32,49
+skills/README.md
+  s_e1e00713a8da84::t_973063915f9555 17
+skills/fkb-lint/SKILL.md
+  s_e1e00713a8da84::t_b4609fa5cc3c58 21-22,25,47
+tests/test_skills.py
+  s_e1e00713a8da84::t_2f1004a5665499 28
+  s_e1e00713a8da84::t_d26d7f41221dd9 45-47,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "139dc333112b3b13827a5e54d71a1714ce2ee6c9",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
