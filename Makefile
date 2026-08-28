@@ -23,9 +23,9 @@ test: test_node_scripts test_python_scripts test_skills
 test_node_scripts: | guard-node
 	node --test 'tests/**/*.test.mjs'
 
-## Test the python support scripts under .scripts/ (fast, deterministic)
+## Test the python scripts (support scripts + the fkb manifest core, fast, deterministic)
 test_python_scripts: | guard-uvx
-	uvx --with pytest pytest -v -m python_scripts
+	uvx --with pytest --with ruamel.yaml pytest -v -m python_scripts
 
 ## Test the skills end-to-end by driving opencode in a fake home (slow, needs network)
 test_skills: | guard-node guard-npm guard-npx guard-uvx
