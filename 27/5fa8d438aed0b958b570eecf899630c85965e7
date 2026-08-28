@@ -1,0 +1,38 @@
+CONTRIBUTING.md
+  s_6ccb3acca67cfb::t_6640a4664128f7 1-9,14-16,19,21-23,25-26,28-29,32-69,71-73
+  s_6ccb3acca67cfb::t_6b1a9fac77bb65 20
+  s_6ccb3acca67cfb::t_769f7382b67e9d 17
+  s_6ccb3acca67cfb::t_c8e934d42e40ea 24,30-31
+  s_6ccb3acca67cfb::t_201323d322c5b3 27
+  s_6ccb3acca67cfb::t_3dd373a7e7d160 70
+  s_6ccb3acca67cfb::t_fb26175f28a593 10-13,18
+.pre-commit-config.yaml
+  s_6ccb3acca67cfb::t_ae0a6c2c8629eb 164
+pyproject.toml
+  s_6ccb3acca67cfb::t_a331d7e2162b87 8
+.gitattributes
+  s_6ccb3acca67cfb::t_3f7702ea4c748e 21-28
+.github/workflows/governance.yml
+  s_6ccb3acca67cfb::t_f6cf15aed03e19 38
+Makefile
+  s_6ccb3acca67cfb::t_2335bb49aab0b0 36
+  s_6ccb3acca67cfb::t_8bc38c0c684fbd 44
+  s_6ccb3acca67cfb::t_2d23b429a09e16 42-43
+  s_6ccb3acca67cfb::t_fe44d25ec79af7 9-18,23,27,31,35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "275fa8d438aed0b958b570eecf899630c85965e7",
+  "prompts": {},
+  "sessions": {
+    "s_6ccb3acca67cfb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb7cf84a3ffeRTDMCL4HOfPcRu",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
