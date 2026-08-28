@@ -1,0 +1,28 @@
+[project]
+name = "federated-knowledge-dev"
+version = "0.0.0"
+description = "Dev tooling and tests for the federated-knowledge skills repo (not a published package)."
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = ["pytest>=8.4", "prek>=0.4"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+markers = [
+  "python_scripts: unit tests for dev/support scripts under .scripts/",
+  "skills: end-to-end tests that drive opencode against the skills (slow, needs network + node)",
+]
+
+[tool.ruff]
+extend-exclude = [".git"]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use bare asserts and long descriptive strings.
+"tests/**" = ["E501", "S101"]

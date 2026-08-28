@@ -7,6 +7,13 @@ npm-debug.log*
 .cache/
 .biome-cache/
 
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

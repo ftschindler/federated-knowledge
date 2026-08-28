@@ -15,9 +15,7 @@ fmtsep = "||"
 cmd = ["git", "log", f"--format=%an{namesep}%ae{fmtsep}%aN{namesep}%aE"]
 seen_set = set()
 seen = defaultdict(list)
-for user in (
-    f.split(fmtsep) for f in set(check_output(cmd, text=True).strip().split("\n"))
-):
+for user in (f.split(fmtsep) for f in set(check_output(cmd, text=True).strip().split("\n"))):
     if user[0] != user[1]:
         # has a mailmap entry
         continue
@@ -40,9 +38,7 @@ contents = mailmap.read_text()
 assert len(contents) > 0
 
 # completely missing from mailmap
-missing_complete_entry = [
-    (u, e) for u, e in seen_set if u not in contents or e not in contents
-]
+missing_complete_entry = [(u, e) for u, e in seen_set if u not in contents or e not in contents]
 # name is in mailmap, but email is new
 missing_email = [(u, e) for u, e in seen_set if u in contents and e not in contents]
 # name occurs with multiple emails, but no mailmap entry
@@ -59,8 +55,6 @@ for user, emails in duplicates:
 for line in unsorted:
     print(f"line not sorted properly: {line}")
 
-num_failures = (
-    len(missing_complete_entry) + len(missing_email) + len(duplicates) + len(unsorted)
-)
+num_failures = len(missing_complete_entry) + len(missing_email) + len(duplicates) + len(unsorted)
 if num_failures > 0:
     sys.exit(1)
