@@ -1,0 +1,31 @@
+.gitignore
+  s_21a29b80f34006::t_78317085ae60d6 10-16
+tests/conftest.py
+  s_21a29b80f34006::t_4b1593fe0fd4ed 1-182
+tests/test_python_scripts.py
+  s_21a29b80f34006::t_578541a47ae511 1-94
+tests/test_skills.py
+  s_21a29b80f34006::t_71097850308006 1-56
+pyproject.toml
+  s_21a29b80f34006::t_37aad31517f15f 1-7,9-28
+Makefile
+  s_21a29b80f34006::t_1faf8221f22d10 5,7,9-13,16-23,33
+.github/workflows/tests.yml
+  s_21a29b80f34006::t_79322a9a9795ee 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "950d103ab8fcc4cb285d865ed4f0a1977caa813e",
+  "prompts": {},
+  "sessions": {
+    "s_21a29b80f34006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fbae76ba5ffeeBtbvJF5DHr6EL",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
