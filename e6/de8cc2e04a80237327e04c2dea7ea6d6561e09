@@ -1,0 +1,21 @@
+DECISIONS.md
+  s_e1e00713a8da84::t_f5acf9aca45cd9 1-114
+.pre-commit-config.yaml
+  s_e1e00713a8da84::t_2dd143c65ac915 164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "e6de8cc2e04a80237327e04c2dea7ea6d6561e09",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
