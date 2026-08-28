@@ -25,7 +25,7 @@ def test_kb_absent_is_loud_and_writes_nothing(kb_absent_home: FakeHome) -> None:
     )
     combined = (result.text + result.stderr).lower()
     # The skill's preflight tells the user to install the kb skills.
-    assert "npx skills add stjbrown/agent-knowledge" in combined or "check-kb" in combined
+    assert "npx skills add stjbrown/agent-knowledge" in combined or "check-deps" in combined
     # And nothing should have been authored into a bundle.
     authored = list(result.workdir.rglob("*.md"))
     assert authored == [], f"expected no bundle writes, found {authored}"
@@ -42,11 +42,11 @@ def test_fkb_skills_are_discovered(kb_present_home: FakeHome) -> None:
         assert skill in text, f"{skill} not discovered; got: {result.text!r}"
 
 
-def test_check_kb_preflight_passes_when_kb_present(kb_present_home: FakeHome) -> None:
-    """The deterministic half: check-kb must pass once kb is installed alongside."""
-    manifest = kb_present_home.agents_skills / "fkb" / "scripts" / "manifest.mjs"
+def test_check_deps_preflight_passes_when_kb_present(kb_present_home: FakeHome) -> None:
+    """The deterministic half: check-deps must pass once uv and kb are installed alongside."""
+    manifest = kb_present_home.agents_skills / "fkb" / "scripts" / "manifest.py"
     proc = subprocess.run(
-        ["node", str(manifest), "check-kb"],
+        ["uv", "run", "--quiet", str(manifest), "check-deps"],
         env=kb_present_home.env,
         cwd=kb_present_home.home,
         capture_output=True,

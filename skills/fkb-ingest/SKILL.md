@@ -18,7 +18,7 @@ Wraps [kb-ingest](../fkb/SKILL.md#route-to-the-right-skill). fkb-ingest owns **w
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-ingest
+uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
 ```
 
 Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`. **Never hand-roll the ingest** —
@@ -27,7 +27,7 @@ that bypasses OKF conformance and the trust model.
 Load the bundle set:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs list
+uv run ~/.config/federated-knowledge/manifest.py list
 ```
 
 ## 2. Classify the target bundle — FAIL CLOSED
@@ -46,7 +46,7 @@ less reuse; a wrongly-public one is irreversible disclosure (git history keeps i
 
 Two checks, both must pass:
 
-1. **Writable gate.** The target must be `writable: true` (`manifest.mjs resolve <target>`). A
+1. **Writable gate.** The target must be `writable: true` (`manifest.py resolve <target>`). A
    read-only upstream is a source, never a write target.
 2. **Disclosure gate.** If your classification places the source into a bundle **more open** than the
    sealed default (e.g. anything with `referenceable_by: "*"` or a published `publish` URL), this is
@@ -59,7 +59,7 @@ Two checks, both must pass:
 If the new concept references another bundle B, enforce the leak rule first:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs can-reference <target> <B>   # exit 0 allow / 1 deny
+uv run ~/.config/federated-knowledge/manifest.py can-reference <target> <B>   # exit 0 allow / 1 deny
 ```
 
 Deny → do not write that link. Allow → emit the link as B's published URL if B has `publish`, else a

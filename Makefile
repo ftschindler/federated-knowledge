@@ -16,12 +16,8 @@ guard-%:
 		exit 1; \
 	}
 
-## Run all tests (node scripts, python scripts, and skills e2e)
-test: test_node_scripts test_python_scripts test_skills
-
-## Test the node scripts under skills/ (fast, deterministic)
-test_node_scripts: | guard-node
-	node --test 'tests/**/*.test.mjs'
+## Run all tests (python scripts + the fkb core/helpers, and skills e2e)
+test: test_python_scripts test_skills
 
 ## Test the python scripts (support scripts + the fkb manifest core, fast, deterministic)
 test_python_scripts: | guard-uvx
@@ -43,4 +39,4 @@ fakehome:
 bootstrap: | guard-git guard-uvx
 	uvx prek install
 
-.PHONY: help test test_node_scripts test_python_scripts test_skills check fakehome bootstrap
+.PHONY: help test test_python_scripts test_skills check fakehome bootstrap

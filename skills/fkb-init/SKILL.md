@@ -1,69 +1,103 @@
 ---
 name: fkb-init
 description: >-
-  Scaffold a new OKF bundle and register it in the federated workspace. Use when adding a new
-  privacy tier or bundle (e.g. a new team, client, or public bundle) to a workspace.okf.yaml
-  federation. Delegates the actual scaffold to kb-init, then adds the bundle's line to the manifest
-  with fail-closed defaults.
+  Set up a federated OKF knowledge workspace interactively. Use for first-time setup or to add
+  bundles to an existing workspace.okf.yaml federation. Builds the workspace if absent (via
+  install-glue), then walks the user through adding bundles — clone a remote, register an existing
+  local checkout, or create a new one — driving the flag-driven helper commands and gathering the
+  federation policy for each.
 disable-model-invocation: true
 version: 0.1.0
-tags: [knowledge, okf, federation, fkb, init, scaffold]
+tags: [knowledge, okf, federation, fkb, init, setup]
 ---
 
-# fkb-init — scaffold + register a bundle
+# fkb-init — interactive federation setup
 
-Wraps [kb-init](../fkb/SKILL.md#route-to-the-right-skill): `kb-init` does the conformant scaffold;
-`fkb-init` adds only the **manifest registration**.
+The front door. Orchestrates the deterministic helper commands (`install-glue`, `clone-bundle`,
+`add-bundle`, `create-bundle`) into a guided setup. `fkb-init` does the **asking**; the helpers do
+the **doing** — this skill never writes the manifest or scaffolds a bundle itself.
 
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-init
+uv run ~/.config/federated-knowledge/manifest.py check-deps kb-init
 ```
 
-Exit 4 → STOP, tell the user `npx skills add stjbrown/agent-knowledge`. Do not scaffold by hand.
+Exit 4 → STOP. The message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills. Do not scaffold by hand.
 
-Also confirm a `workspace.okf.yaml` exists at the workspace root (else copy
-`workspace.okf.yaml.example` first — the workspace must exist before you register into it).
+> If `~/.config/federated-knowledge/manifest.py` does not exist yet, the workspace has never been
+> initialised — step 2 handles this by running install-glue from the installed skill.
 
-## 2. Gather the bundle's federation policy
+## 2. Build the workspace if absent
 
-Ask the user (do not guess — these are security-relevant):
-
-- **name** — the bundle key (e.g. `team`, `client_acme`, `public`).
-- **path** — local checkout, usually `./<name>/docs`.
-- **referenceable_by** — who may point AT it. Default `[]` (sealed). `"*"` only for a genuinely
-  public foundation. For mutual peers, remember to also add this bundle to the peer's list.
-- **writable** — default `false`; set `true` only if agents should author here.
-- **publish** — default `null`; a URL base only if this bundle is published.
-
-## 3. Delegate the scaffold to kb-init
-
-Run **kb-init** targeting the chosen `path` (kb-init scaffolds `index.md`, `log.md`, and the schema
-layer). Let kb-init own all bundle content — fkb never writes concept files.
-
-## 4. Register in the manifest
-
-Append one flow-style line under `bundles:` in `workspace.okf.yaml`:
-
-```yaml
-  <name>: { path: <path>, referenceable_by: <[]|"*"|[peer,...]>, writable: <bool>, publish: <url|null> }
-```
-
-Omit an axis to take its fail-closed default (`writable:false`, `publish:null`, `referenceable_by:[]`).
-If you created a mutual peer, edit the peer's `referenceable_by` to include this bundle too.
-
-## 5. Verify
+Check whether the workspace exists:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs validate
-node <fkb-dir>/fkb/scripts/manifest.mjs list        # confirm the new bundle resolves as intended
+uv run ~/.config/federated-knowledge/manifest.py validate
 ```
 
-Report the registered line and the resolved policy back to the user.
+- **Malformed / missing** → build it. Ask the user for a `workspace_root` (default
+  `~/.agents/knowledge`), then run install-glue from the installed skill:
+
+  ```bash
+  uv run <installed-fkb-skill-dir>/scripts/install-glue --root <workspace_root>
+  ```
+
+  Then hand off the agent-instructions block (it is not written automatically):
+
+  ```bash
+  uv run ~/.config/federated-knowledge/install-glue --print-agents-block
+  ```
+
+  Add its output to the user's agent instruction file (`AGENTS.md` / `CLAUDE.md`), or tell the user
+  to paste it. The `<!-- BEGIN fkb -->` / `<!-- END fkb -->` markers make a re-run replace it in place.
+
+- **Valid** → the workspace exists; go straight to adding bundles.
+
+## 3. Add bundles (loop until the user is done)
+
+For each bundle the user wants, ask which of the three kinds it is, then drive the matching command.
+Gather the federation policy first (`referenceable_by`, `writable`, `publish`) and pass it as flags so
+the command runs non-interactively — you are the one asking, not the script.
+
+- **Remote git repo** → clone and register:
+
+  ```bash
+  uv run ~/.config/federated-knowledge/clone-bundle <url> <name> <referenceable_by> [--writable] [--publish <url>]
+  ```
+
+  It clones under `workspace_root` and discovers the OKF root (the dir of the top-most `index.md`).
+  If discovery is ambiguous it will ask; confirm the subdir with the user. Cloned bundles are a
+  **source** — default `writable:false` unless the user will author into it.
+
+- **Existing local checkout** → register in place, never moved:
+
+  ```bash
+  uv run ~/.config/federated-knowledge/add-bundle <name> <absolute-path> <referenceable_by> [--writable] [--publish <url>]
+  ```
+
+- **New bundle to author into** → scaffold and register:
+
+  ```bash
+  uv run ~/.config/federated-knowledge/create-bundle <name> <referenceable_by> [--publish <url>]
+  ```
+
+  Defaults `writable:true` (you author into it) and sealed `referenceable_by:[]`.
+
+For **mutual peers**, remember to add each to the other's `referenceable_by`.
+
+## 4. Confirm
+
+```bash
+uv run ~/.config/federated-knowledge/manifest.py list
+```
+
+Show the resolved bundles and their policy, so the user sees what entered the federation.
 
 ## Must not
 
-- Do not scaffold bundle content yourself — always via kb-init.
+- Do not write the manifest or scaffold bundle content yourself — always via the helper commands.
 - Do not open `referenceable_by`/`writable`/`publish` wider than the user asked; when unspecified,
-  take the sealed default.
+  the commands take the fail-closed default.
+- Do not place content into any bundle here — fkb-init only registers bundles; capture is fkb-ingest.

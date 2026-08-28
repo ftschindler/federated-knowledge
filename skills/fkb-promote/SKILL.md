@@ -20,7 +20,7 @@ and why promotion is a deliberate, gated act.
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-ingest
+uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
 ```
 
 Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
@@ -28,8 +28,8 @@ Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
 Resolve source and target policy:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs resolve <source-bundle>
-node <fkb-dir>/fkb/scripts/manifest.mjs resolve <target-bundle>
+uv run ~/.config/federated-knowledge/manifest.py resolve <source-bundle>
+uv run ~/.config/federated-knowledge/manifest.py resolve <target-bundle>
 ```
 
 ## 2. Gate — require explicit human sign-off
@@ -46,7 +46,7 @@ Also verify the target is `writable: true`; a read-only upstream can never be a 
 ## 3. Confidentiality review of the content itself
 
 Before the write, review the concept prose for anything that must NOT reach the target's audience:
-client/employer names, internal hostnames, codenames, secrets. `manifest.mjs` enforces the *link*
+client/employer names, internal hostnames, codenames, secrets. `manifest.py` enforces the *link*
 rule mechanically, but the semantic "is this prose safe to disclose" judgment is human. If anything
 is borderline, redact it in the promoted copy or abort and report.
 

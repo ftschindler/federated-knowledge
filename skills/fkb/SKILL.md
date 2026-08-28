@@ -23,15 +23,17 @@ fkb delegates in prose to the `kb-*` skills — there is no code import, so a mi
 silently unless you check. **Every fkb skill's FIRST act is a preflight:**
 
 ```bash
-node <fkb-skills-dir>/fkb/scripts/manifest.mjs check-kb
+uv run ~/.config/federated-knowledge/manifest.py check-deps
 ```
 
-- exit 0 → all required kb skills (`kb`, `kb-init`, `kb-ingest`, `kb-query`, `kb-lint`) are installed.
-- exit 4 → STOP. Tell the user to run `npx skills add stjbrown/agent-knowledge`. **Do NOT hand-roll
-  the operation** — bypassing kb also bypasses OKF conformance.
+- exit 0 → `uv` and all required kb skills (`kb`, `kb-init`, `kb-ingest`, `kb-query`, `kb-lint`) are present.
+- exit 4 → STOP. The message names what is missing — install `uv`, or run
+  `npx skills add stjbrown/agent-knowledge` for the kb skills. **Do NOT hand-roll the operation** —
+  bypassing kb also bypasses OKF conformance.
 
-You also need a `workspace.okf.yaml` at the workspace root (copy `workspace.okf.yaml.example`).
-`manifest.mjs` searches upward for it.
+You also need a workspace. `install-glue` creates it at the fixed path
+`~/.config/federated-knowledge/workspace.okf.yaml` and copies `manifest.py` beside it; every command
+above resolves that fixed location (or `$FKB_WORKSPACE`), so it works from any directory.
 
 ## The manifest is the single source of truth
 
@@ -40,10 +42,10 @@ You also need a `workspace.okf.yaml` at the workspace root (copy `workspace.okf.
 through the deterministic helper:
 
 ```bash
-node .../fkb/scripts/manifest.mjs list                      # resolved bundles
-node .../fkb/scripts/manifest.mjs resolve <bundle>          # one bundle as JSON
-node .../fkb/scripts/manifest.mjs can-reference <from> <to> # exit 0 allow / 1 deny
-node .../fkb/scripts/manifest.mjs validate                  # manifest well-formed?
+uv run ~/.config/federated-knowledge/manifest.py list                      # resolved bundles
+uv run ~/.config/federated-knowledge/manifest.py resolve <bundle>          # one bundle as JSON
+uv run ~/.config/federated-knowledge/manifest.py can-reference <from> <to> # exit 0 allow / 1 deny
+uv run ~/.config/federated-knowledge/manifest.py validate                  # manifest well-formed?
 ```
 
 ## The reference rule (leak control)

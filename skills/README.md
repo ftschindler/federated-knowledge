@@ -14,6 +14,6 @@ mutation to `kb-*`. See the [top-level README](../README.md) for how the pieces 
 | `fkb-lint` | Runs per-bundle `kb-lint` plus the cross-bundle `referenceable_by` and dangling-reference checks. |
 | `fkb-promote` | Moves a concept to a more-open tier. Human-gated, because disclosure is irreversible. |
 
-Every `fkb-*` skill's first act is a preflight (`manifest.mjs check-kb`): if the `kb-*` skills are
+Every `fkb-*` skill's first act is a preflight (`manifest.py check-deps`): if `uv` or the `kb-*` skills are
 missing, it stops and tells you to run `npx skills add stjbrown/agent-knowledge` rather than
 hand-rolling the operation.

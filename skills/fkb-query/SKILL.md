@@ -19,7 +19,7 @@ fans out to every bundle; only writing is gated (see fkb-ingest).
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-query
+uv run ~/.config/federated-knowledge/manifest.py check-deps kb-query
 ```
 
 Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
@@ -27,7 +27,7 @@ Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
 Load the bundle set:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs list
+uv run ~/.config/federated-knowledge/manifest.py list
 ```
 
 ## 2. Fan kb-query across bundles
@@ -51,7 +51,7 @@ Every citation must name **which bundle** it came from, so tier is always visibl
 - Published bundle → its `publish` URL + concept path (no `docs/` segment — MkDocs strips it).
 - Unpublished bundle → `bundle:concept/path.md`, e.g. `private:decisions/pricing.md`.
 
-Use `manifest.mjs resolve <bundle>` to get the `publish` base when formatting a URL citation.
+Use `manifest.py resolve <bundle>` to get the `publish` base when formatting a URL citation.
 
 ## Must not
 
