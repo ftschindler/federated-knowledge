@@ -63,14 +63,14 @@ the map it acts on.
                  └────────┬──────────┘
                     read  │  the sole coupling point between bundles
         ┌─────────────────▼─────────────────────────────┐
-        │  workspace.okf.yaml   (~/.config/…)            │
-        │  path · referenceable_by · writable · publish  │
+        │  workspace.okf.yaml   (~/.config/…)           │
+        │  path · referenceable_by · writable · publish │
         └─────────────────┬─────────────────────────────┘
-                 resolve   │  path → local checkout
-        ┌──────────┬───────┼────────┬───────────────┐
-        ▼          ▼       ▼        ▼               ▼
-     public      team    peer    private     upstream (r/o)
-     └─────────── the bundles (independent OKF repos) ──────────┘
+                resolve   │  path → local checkout
+       ┌──────────┬───────┼────────┬───────────────┐
+       ▼          ▼       ▼        ▼               ▼
+    public      team    peer    private     upstream (r/o)
+ └─────────── the bundles (independent OKF repos) ──────────┘
 ```
 
 ### The two coupling points
@@ -122,7 +122,7 @@ or `log.md` itself. Reads fan out across all bundles; writes target one bundle a
 `referenceable_by` is inbound-only: it lists who may point *at* a bundle, which is exactly the
 disclosure axis. `"*"` means anyone (a public foundation); `[]` means no one (a sealed private tier).
 Two bundles that may cite each other list each other - a symmetric, unranked permission. One
-`manifest.mjs can-reference A B` call decides it.
+`manifest.py can-reference A B` call decides it.
 
 ### Trust model and data leaks
 
@@ -218,20 +218,21 @@ in for free.
 
 The `fkb-*` skills delegate every bundle mutation to `kb-init`, `kb-ingest`, `kb-query`, and
 `kb-lint` from [stjbrown/agent-knowledge](https://github.com/stjbrown/agent-knowledge). If they are
-missing, every `fkb` skill's preflight (`manifest.mjs check-kb`) fails loudly with the install
+missing, every `fkb` skill's preflight (`manifest.py check-deps`) fails loudly with the install
 command rather than silently hand-rolling the operation - bypassing `kb` also bypasses OKF
 conformance.
 
-## manifest.mjs - the deterministic core
+## manifest.py - the deterministic core
 
-A zero-dependency Node helper every `fkb` skill calls. No `npm install` needed.
+A zero-install Python helper every `fkb` skill calls, run via `uv` (PEP 723 inline deps). After
+`install-glue` it lives at `~/.config/federated-knowledge/manifest.py`; invoke it there.
 
 ```bash
-node skills/fkb/scripts/manifest.mjs list                      # resolved bundles
-node skills/fkb/scripts/manifest.mjs resolve <bundle>          # one bundle as JSON
-node skills/fkb/scripts/manifest.mjs can-reference <from> <to> # exit 0 allow / 1 deny
-node skills/fkb/scripts/manifest.mjs check-kb                  # exit 0 all kb present / 4 missing
-node skills/fkb/scripts/manifest.mjs validate                  # exit 0 well-formed / 2 malformed
+uv run ~/.config/federated-knowledge/manifest.py list                      # resolved bundles
+uv run ~/.config/federated-knowledge/manifest.py resolve <bundle>          # one bundle as JSON
+uv run ~/.config/federated-knowledge/manifest.py can-reference <from> <to> # exit 0 allow / 1 deny
+uv run ~/.config/federated-knowledge/manifest.py check-deps                # exit 0 uv+kb present / 4 missing
+uv run ~/.config/federated-knowledge/manifest.py validate                  # exit 0 well-formed / 2 malformed
 ```
 
 Tests and developer setup live in [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -244,7 +245,7 @@ Given the [installed skills](#prerequisites), the basis of the federation is the
 You can initialise one with:
 
 ```bash
-node ~/.agents/skills/fkb/scripts/manifest.mjs install-glue  # optionally with --root=~/some/dir
+uv run ~/.agents/skills/fkb/scripts/install-glue  # optionally with --root ~/some/dir
 ```
 
 This will:
@@ -272,7 +273,7 @@ checkout for the OKF root and asks you to confirm or pick the subdir when it is 
 that subdir as the bundle's `path`.
 
 ```bash
-node ~/.agents/skills/fkb/scripts/manifest.mjs clone-bundle <url>
+uv run ~/.config/federated-knowledge/clone-bundle <url> <name> [referenceable_by]
 ```
 
 **`add-bundle <path>`** — a bundle already checked out somewhere on your disk, which you want to
@@ -280,7 +281,7 @@ federate without moving. It takes the local path as-is (absolute, so `workspace_
 confirms the OKF root, asks for the policy, and adds the line. Nothing is cloned or relocated.
 
 ```bash
-node ~/.agents/skills/fkb/scripts/manifest.mjs add-bundle <path>
+uv run ~/.config/federated-knowledge/add-bundle <name> <path> [referenceable_by]
 ```
 
 **`create-bundle <name>`** — a brand-new bundle you want to author into, whether to share or for
@@ -288,7 +289,7 @@ private notes. It scaffolds a conformant OKF bundle (via `kb-init`) under `works
 it to `writable: true` and the sealed `referenceable_by: []`, and registers it.
 
 ```bash
-node ~/.agents/skills/fkb/scripts/manifest.mjs create-bundle <name>
+uv run ~/.config/federated-knowledge/create-bundle <name> [referenceable_by]
 ```
 
 Each command ends by showing the manifest line it wrote and the resolved policy, so you can see what
