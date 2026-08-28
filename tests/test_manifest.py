@@ -249,3 +249,68 @@ def test_exit_codes_stable() -> None:
         manifest.Exit.MISSING_DEP,
         manifest.Exit.USAGE,
     ) == (0, 1, 2, 3, 4, 64)
+
+
+# --- writer: add_bundle ----------------------------------------------------
+
+WRITER_SAMPLE = """\
+# workspace root comment
+workspace_root: /ws
+
+bundles:
+  # the shared public foundation
+  public:  { path: public/docs,  referenceable_by: "*", writable: true, publish: https://me.example/kb }
+"""
+
+
+def test_add_bundle_appends_and_preserves_comments(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    manifest.add_bundle(p, "team", "team/docs", manifest.BundlePolicy(referenceable_by=["peer"], writable=True))
+    text = p.read_text()
+    assert "# workspace root comment" in text
+    assert "# the shared public foundation" in text
+    ws = manifest.load_workspace(p)
+    assert list(ws.bundles) == ["public", "team"]  # append last, order preserved
+    assert ws.bundles["team"].referenceable_by == ["peer"]
+    assert ws.bundles["team"].writable is True
+
+
+def test_add_bundle_fail_closed_defaults(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    manifest.add_bundle(p, "sealed", "sealed/docs", manifest.BundlePolicy())
+    ws = manifest.load_workspace(p)
+    sealed = ws.bundles["sealed"]
+    assert sealed.referenceable_by == []
+    assert sealed.writable is False
+    assert sealed.publish is None
+
+
+def test_add_bundle_duplicate_raises(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    with pytest.raises(manifest.ManifestError, match="already exists"):
+        manifest.add_bundle(p, "public", "other/docs", manifest.BundlePolicy())
+
+
+def test_add_bundle_missing_manifest_raises(tmp_path: Path) -> None:
+    with pytest.raises(manifest.ManifestError, match="no workspace configured"):
+        manifest.add_bundle(tmp_path / "nope.yaml", "x", "x/docs", manifest.BundlePolicy())
+
+
+def test_add_bundle_wildcard_referenceable_by(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    manifest.add_bundle(p, "shared", "shared/docs", manifest.BundlePolicy(referenceable_by="*"))
+    ws = manifest.load_workspace(p)
+    assert ws.bundles["shared"].referenceable_by == "*"
+
+
+def test_cli_add_bundle_and_reparse(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    r = _run(p, "add-bundle", "peer", "peer/docs", "--referenceable-by", "team", "--writable")
+    assert r.returncode == manifest.Exit.OK
+    assert _run(p, "validate").returncode == manifest.Exit.OK
+
+
+def test_cli_add_bundle_duplicate_exit(tmp_path: Path) -> None:
+    p = _write(tmp_path, WRITER_SAMPLE)
+    r = _run(p, "add-bundle", "public", "x/docs")
+    assert r.returncode == manifest.Exit.BAD_MANIFEST

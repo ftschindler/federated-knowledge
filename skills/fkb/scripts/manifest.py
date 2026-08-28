@@ -41,6 +41,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
 from ruamel.yaml.error import YAMLError
 
 # ---------------------------------------------------------------------------
@@ -69,6 +70,7 @@ DEFAULT_PUBLISH = None  # not published; keep links local
 WILDCARD = "*"  # referenceable_by: anyone
 
 _CAN_REFERENCE_ARGC = 2  # can-reference takes exactly <from> <to>
+_ADD_BUNDLE_ARGC = 2  # add-bundle takes at least <name> <path>
 
 
 class ManifestError(Exception):
@@ -156,9 +158,17 @@ class Workspace:
     bundles: dict[str, Bundle]
 
 
+@dataclass
+class BundlePolicy:
+    referenceable_by: str | list[str] | None = None
+    writable: bool = DEFAULT_WRITABLE
+    publish: str | None = DEFAULT_PUBLISH
+
+
 def _yaml() -> YAML:
     y = YAML()  # round-trip mode: preserves comments + flow style on write
     y.preserve_quotes = True
+    y.width = 4096  # keep each flow-style bundle entry on one line, never wrap
     return y
 
 
@@ -239,6 +249,56 @@ def can_reference(ws: Workspace, source: str, target: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# writer: append a bundle line (round-trip; duplicate = error; append last)
+# ---------------------------------------------------------------------------
+
+
+def _flow_entry(path: str, policy: BundlePolicy) -> CommentedMap:
+    ref = DEFAULT_REFERENCEABLE_BY if policy.referenceable_by is None else policy.referenceable_by
+    entry = CommentedMap()
+    entry["path"] = path
+    if ref == WILDCARD:
+        entry["referenceable_by"] = WILDCARD
+    else:
+        seq = CommentedSeq(ref)
+        seq.fa.set_flow_style()
+        entry["referenceable_by"] = seq
+    entry["writable"] = policy.writable
+    entry["publish"] = policy.publish
+    entry.fa.set_flow_style()
+    return entry
+
+
+def add_bundle(manifest_path: Path, name: str, path: str, policy: BundlePolicy) -> None:
+    """Append a bundle to the manifest's ``bundles:`` map, preserving comments and order.
+
+    Raises ManifestError on a duplicate name (never overwrite — a silent widen is a
+    disclosure risk) or a malformed manifest. New bundles always append last, so the
+    user's own hand-sorting of the list survives.
+    """
+    if not manifest_path.exists():
+        raise ManifestError(f"no workspace configured at {manifest_path} — run install-glue first")
+
+    yaml = _yaml()
+    try:
+        data = yaml.load(manifest_path.read_text(encoding="utf-8"))
+    except YAMLError as exc:
+        raise ManifestError(f"could not parse {manifest_path}: {exc}") from exc
+
+    if not isinstance(data, dict) or "bundles" not in data or not isinstance(data["bundles"], dict):
+        raise ManifestError("manifest has no 'bundles:' map to append to")
+
+    bundles = data["bundles"]
+    if name in bundles:
+        raise ManifestError(f"bundle {name!r} already exists — pick another name or edit the manifest")
+
+    bundles[name] = _flow_entry(path, policy)  # dict insertion order = append last
+
+    with manifest_path.open("w", encoding="utf-8") as handle:
+        yaml.dump(data, handle)
+
+
+# ---------------------------------------------------------------------------
 # dependency preflight (uv + kb skills)
 # ---------------------------------------------------------------------------
 
@@ -280,16 +340,19 @@ def _die(code: int, msg: str) -> None:
 
 
 def _parse_args(argv: list[str]) -> tuple[dict[str, object], list[str]]:
-    flags: dict[str, object] = {"manifest": None, "json": False}
+    flags: dict[str, object] = {"manifest": None, "json": False, "writable": False}
+    value_flags = {"--manifest": "manifest", "--referenceable-by": "referenceable_by", "--publish": "publish"}
     rest: list[str] = []
     i = 0
     while i < len(argv):
         arg = argv[i]
-        if arg == "--manifest":
+        if arg in value_flags:
             i += 1
-            flags["manifest"] = argv[i] if i < len(argv) else None
+            flags[value_flags[arg]] = argv[i] if i < len(argv) else None
         elif arg == "--json":
             flags["json"] = True
+        elif arg == "--writable":
+            flags["writable"] = True
         else:
             rest.append(arg)
         i += 1
@@ -353,16 +416,48 @@ def _cmd_can_reference(ws: Workspace, args: list[str]) -> None:
     sys.exit(Exit.OK if allowed else Exit.DENIED)
 
 
+def _parse_referenceable_by(raw: str) -> str | list[str]:
+    if raw == WILDCARD:
+        return WILDCARD
+    names = [n.strip() for n in raw.strip().strip("[]").split(",")]
+    return [n for n in names if n]
+
+
+def _cmd_add_bundle(manifest_path: Path, args: list[str], flags: dict[str, object]) -> None:
+    if len(args) < _ADD_BUNDLE_ARGC:
+        _die(
+            Exit.USAGE,
+            "usage: manifest.py add-bundle <name> <path> [--referenceable-by '*'|a,b] [--writable] [--publish URL]",
+        )
+    name, path = args[0], args[1]
+    ref_raw = flags.get("referenceable_by")
+    policy = BundlePolicy(
+        referenceable_by=_parse_referenceable_by(ref_raw) if isinstance(ref_raw, str) else None,
+        writable=bool(flags.get("writable")),
+        publish=flags["publish"] if isinstance(flags.get("publish"), str) else None,
+    )
+    try:
+        add_bundle(manifest_path, name, path, policy)
+    except ManifestError as exc:
+        _die(Exit.BAD_MANIFEST, f"manifest error: {exc}")
+    sys.stdout.write(f"added bundle {name!r} to {manifest_path}\n")
+    sys.exit(Exit.OK)
+
+
 def main(argv: list[str]) -> None:
     flags, rest = _parse_args(argv)
     if not rest:
-        _die(Exit.USAGE, "usage: manifest.py <list|resolve|can-reference|check-deps|validate>")
+        _die(Exit.USAGE, "usage: manifest.py <list|resolve|can-reference|add-bundle|check-deps|validate>")
 
     cmd, cmd_args = rest[0], rest[1:]
     as_json = bool(flags["json"])
 
     if cmd == "check-deps":
         _cmd_check_deps(cmd_args, as_json)
+        return
+
+    if cmd == "add-bundle":
+        _cmd_add_bundle(manifest_location(flags["manifest"]), cmd_args, flags)  # type: ignore[arg-type]
         return
 
     manifest_path = manifest_location(flags["manifest"])  # type: ignore[arg-type]
