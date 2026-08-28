@@ -25,9 +25,13 @@ test_skills:
 check:
 	prek run --all-files
 
+## Build a fake opencode home (fkb+kb) and drop into a shell for inspection
+fakehome:
+	.scripts/fake-home.py
+
 ## Install pre-commit hooks (and git-lfs) into this clone
 bootstrap:
 	git lfs install --local
 	prek install
 
-.PHONY: help test test_node_scripts test_python_scripts test_skills check bootstrap
+.PHONY: help test test_node_scripts test_python_scripts test_skills check fakehome bootstrap

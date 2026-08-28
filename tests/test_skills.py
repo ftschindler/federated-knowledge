@@ -8,7 +8,8 @@ failure guidance appear?) rather than exact prose.
 from __future__ import annotations
 
 import pytest
-from conftest import FakeHome, requires_e2e
+from conftest import requires_e2e
+from fake_home import FakeHome
 
 pytestmark = [pytest.mark.skills, requires_e2e]
 
