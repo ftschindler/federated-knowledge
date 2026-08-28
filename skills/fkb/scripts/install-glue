@@ -33,7 +33,14 @@ DEFAULT_WORKSPACE_ROOT = "~/.agents/knowledge"
 
 # The helper scripts copied into the config dir. manifest.py is the core; the
 # bundle commands sit beside it and import it.
-HELPER_SCRIPTS = ["manifest.py", "install-glue", "clone-bundle", "add-bundle", "create-bundle"]
+HELPER_SCRIPTS = [
+    "manifest.py",
+    "_fkb_bundle.py",
+    "install-glue",
+    "clone-bundle",
+    "add-bundle",
+    "create-bundle",
+]
 
 AGENTS_BLOCK = """\
 <!-- BEGIN fkb (managed by federated-knowledge; edits between these markers are overwritten) -->
