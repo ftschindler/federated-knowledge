@@ -1,0 +1,43 @@
+.ruff.toml
+  s_6ccb3acca67cfb::t_8501b321573a4f 1-13,15-20
+  s_6ccb3acca67cfb::t_9bff548df3bfc6 14
+tests/test_python_scripts.py
+  s_6ccb3acca67cfb::t_9c9f39eb8a3f33 58
+  s_6ccb3acca67cfb::t_c9e16d21d440be 82
+.scripts/check_mailmap.py
+  s_6ccb3acca67cfb::t_14df835f29fd28 2-4
+.scripts/fake-home.py
+  s_6ccb3acca67cfb::t_c9e16d21d440be 37,39
+  s_6ccb3acca67cfb::t_5aaa578e787afd 1-4
+  s_6ccb3acca67cfb::t_42cc14e61c765b 30
+  s_6ccb3acca67cfb::t_3975672af3ed2d 60
+pytest.toml
+  s_6ccb3acca67cfb::t_9b4fa61e0ced82 1
+tests/fake_home.py
+  s_6ccb3acca67cfb::t_1a9dcfdf8a1f6e 125
+tests/test_skills.py
+  s_6ccb3acca67cfb::t_c9e16d21d440be 38
+  s_6ccb3acca67cfb::t_932fec9a865e4f 10-11
+  s_6ccb3acca67cfb::t_3e6873903eb338 55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "cdb0c478e798538f6bde3482cbdc47b135967509",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_6ccb3acca67cfb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb7cf84a3ffeRTDMCL4HOfPcRu",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
