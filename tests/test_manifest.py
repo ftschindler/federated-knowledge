@@ -81,9 +81,14 @@ def test_missing_path_is_error(tmp_path: Path) -> None:
         manifest.load_workspace(_write(tmp_path, "workspace_root: /ws\nbundles:\n  broken: { writable: true }\n"))
 
 
-def test_empty_bundles_is_error(tmp_path: Path) -> None:
-    with pytest.raises(manifest.ManifestError, match="no 'bundles:' entries"):
-        manifest.load_workspace(_write(tmp_path, "bundles:\n"))
+def test_missing_bundles_key_is_error(tmp_path: Path) -> None:
+    with pytest.raises(manifest.ManifestError, match="no 'bundles:' key"):
+        manifest.load_workspace(_write(tmp_path, "workspace_root: /ws\n"))
+
+
+def test_empty_bundles_is_valid_fresh_federation(tmp_path: Path) -> None:
+    ws = manifest.load_workspace(_write(tmp_path, "workspace_root: /ws\nbundles:\n"))
+    assert ws.bundles == {}
 
 
 def test_missing_manifest_is_error(tmp_path: Path) -> None:
@@ -314,3 +319,11 @@ def test_cli_add_bundle_duplicate_exit(tmp_path: Path) -> None:
     p = _write(tmp_path, WRITER_SAMPLE)
     r = _run(p, "add-bundle", "public", "x/docs")
     assert r.returncode == manifest.Exit.BAD_MANIFEST
+
+
+def test_add_bundle_into_empty_federation(tmp_path: Path) -> None:
+    p = _write(tmp_path, "workspace_root: /ws\nbundles:\n")
+    manifest.add_bundle(p, "first", "first/docs", manifest.BundlePolicy(referenceable_by="*"))
+    ws = manifest.load_workspace(p)
+    assert list(ws.bundles) == ["first"]
+    assert "workspace_root" in p.read_text()

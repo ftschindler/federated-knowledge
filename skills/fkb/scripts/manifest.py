@@ -219,12 +219,14 @@ def load_workspace(manifest_path: Path | None = None) -> Workspace:
     except YAMLError as exc:  # malformed YAML
         raise ManifestError(f"could not parse {path}: {exc}") from exc
 
-    if not isinstance(data, dict) or "bundles" not in data or not isinstance(data["bundles"], dict):
-        raise ManifestError("manifest has no 'bundles:' entries")
+    if not isinstance(data, dict) or "bundles" not in data:
+        raise ManifestError("manifest has no 'bundles:' key")
 
-    raw_bundles = data["bundles"]
-    if len(raw_bundles) == 0:
-        raise ManifestError("manifest has no 'bundles:' entries")
+    # An empty `bundles:` (parsed as None or {}) is a valid, freshly-initialized
+    # federation — empty but usable once the first bundle is added.
+    raw_bundles = data["bundles"] or {}
+    if not isinstance(raw_bundles, dict):
+        raise ManifestError("'bundles:' must be a map of name -> bundle")
 
     workspace_root = data.get("workspace_root")
     if workspace_root is not None and not isinstance(workspace_root, str):
@@ -285,8 +287,14 @@ def add_bundle(manifest_path: Path, name: str, path: str, policy: BundlePolicy) 
     except YAMLError as exc:
         raise ManifestError(f"could not parse {manifest_path}: {exc}") from exc
 
-    if not isinstance(data, dict) or "bundles" not in data or not isinstance(data["bundles"], dict):
-        raise ManifestError("manifest has no 'bundles:' map to append to")
+    if not isinstance(data, dict) or "bundles" not in data:
+        raise ManifestError("manifest has no 'bundles:' key to append to")
+
+    # An empty `bundles:` parses as None; seed a fresh map so the first bundle appends.
+    if data["bundles"] is None:
+        data["bundles"] = CommentedMap()
+    if not isinstance(data["bundles"], dict):
+        raise ManifestError("'bundles:' must be a map of name -> bundle")
 
     bundles = data["bundles"]
     if name in bundles:
