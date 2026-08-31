@@ -46,10 +46,11 @@ AGENTS_BLOCK = """\
 <!-- BEGIN fkb (managed by federated-knowledge; edits between these markers are overwritten) -->
 ## Federated knowledge (fkb)
 
-Durable, hard-won knowledge — decisions, research, tool/config fixes — lives in privacy-tiered
-**knowledge bundles**: directories of plain markdown files with frontmatter (the OKF format), each a
+Durable, hard-won knowledge — decisions, research, tool/config fixes — lives in your **knowledge
+wiki**: privacy-tiered **bundles** of plain markdown files with frontmatter (the OKF format), each a
 standalone git repo. One manifest ties them together, and the `fkb-*` skills read and write across
-them so a cold session can find what past sessions learned.
+them so a cold session can find what past sessions learned. When the user says "the wiki" — or "the
+public wiki," "my notes," "the team wiki" — they mean these bundles.
 
 **See what's configured first.** Run
 `uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list` to see the bundles
@@ -59,8 +60,10 @@ machine — skip it silently and proceed normally. If it lists bundles, fkb is c
 **Query before you web-search.** Use the `fkb-query` skill to answer from the bundles; it reads
 across all of them and cites each hit by which bundle it came from.
 
-**Capture what's worth keeping** with the `fkb-ingest` skill. It picks the right privacy tier
-fail-closed (most-private by default), asks before anything more public, and files the note for you.
+**Capture what's worth keeping** — "note this in the wiki," "save this," "remember this" — with the
+`fkb-ingest` skill. It picks the right privacy tier fail-closed (most-private by default) and files
+the note for you. Naming a tier ("in the *public* wiki," "to the team notes") targets that bundle
+directly; a more-open tier triggers a disclosure gate (human sign-off) before anything is written.
 
 **Rules that keep tiers from leaking** (the skills enforce these; do not bypass them):
 - Never hand-edit bundle content — author only through the `fkb-*` skills.
