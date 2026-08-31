@@ -20,13 +20,14 @@ the **doing** — this skill never writes the manifest or scaffolds a bundle its
 ## 1. Preflight (mandatory)
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps kb-init
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-init
 ```
 
 Exit 4 → STOP. The message names what is missing — install `uv`, or run
 `npx skills add stjbrown/agent-knowledge` for the kb skills. Do not scaffold by hand.
 
-> If `~/.config/federated-knowledge/manifest.py` does not exist yet, the workspace has never been
+> If `manifest.py` is not yet installed under `${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/`,
+> the workspace has never been
 > initialised — step 2 handles this by running install-glue from the installed skill.
 
 ## 2. Build the workspace if absent
@@ -34,7 +35,7 @@ Exit 4 → STOP. The message names what is missing — install `uv`, or run
 Check whether the workspace exists:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py validate
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate
 ```
 
 - **Malformed / missing** → build it. Ask the user for a `workspace_root` (default
@@ -47,7 +48,7 @@ uv run ~/.config/federated-knowledge/manifest.py validate
   Then hand off the agent-instructions block (it is not written automatically):
 
   ```bash
-  uv run ~/.config/federated-knowledge/install-glue --print-agents-block
+  uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/install-glue" --print-agents-block
   ```
 
   Add its output to the user's agent instruction file (`AGENTS.md` / `CLAUDE.md`), or tell the user
@@ -64,7 +65,7 @@ the command runs non-interactively — you are the one asking, not the script.
 - **Remote git repo** → clone and register:
 
   ```bash
-  uv run ~/.config/federated-knowledge/clone-bundle <url> <name> <referenceable_by> [--writable] [--publish <url>]
+  uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/clone-bundle" <url> <name> <referenceable_by> [--writable] [--publish <url>]
   ```
 
   It clones under `workspace_root` and discovers the OKF root (the dir of the top-most `index.md`).
@@ -74,13 +75,13 @@ the command runs non-interactively — you are the one asking, not the script.
 - **Existing local checkout** → register in place, never moved:
 
   ```bash
-  uv run ~/.config/federated-knowledge/add-bundle <name> <absolute-path> <referenceable_by> [--writable] [--publish <url>]
+  uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/add-bundle" <name> <absolute-path> <referenceable_by> [--writable] [--publish <url>]
   ```
 
 - **New bundle to author into** → scaffold and register:
 
   ```bash
-  uv run ~/.config/federated-knowledge/create-bundle <name> <referenceable_by> [--publish <url>]
+  uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/create-bundle" <name> <referenceable_by> [--publish <url>]
   ```
 
   Defaults `writable:true` (you author into it) and sealed `referenceable_by:[]`.
@@ -92,7 +93,7 @@ For **mutual peers**, remember to add each to the other's `referenceable_by`.
 ## 4. Confirm
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py list
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list
 ```
 
 Show the resolved bundles and their policy, so the user sees what entered the federation.

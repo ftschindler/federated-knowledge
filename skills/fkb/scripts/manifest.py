@@ -14,10 +14,10 @@ Responsibilities (the manifest-aware concerns; all bundle MUTATION is delegated 
      prose, so if a dependency is missing there is nothing to throw — we make it LOUD here.
 
 The manifest lives at a fixed location (single workspace per machine):
-    $FKB_WORKSPACE            (override, points at a manifest file)
     $XDG_CONFIG_HOME/federated-knowledge/workspace.okf.yaml
     ~/.config/federated-knowledge/workspace.okf.yaml   (XDG default)
-There is deliberately NO upward-from-cwd search: cwd never affects resolution.
+Pass --manifest to point elsewhere. There is deliberately NO upward-from-cwd
+search: cwd never affects resolution.
 
 Usage:
   manifest.py list                          # resolved bundles, one per line
@@ -90,15 +90,13 @@ def config_dir() -> Path:
 
 
 def manifest_location(override: str | None = None) -> Path:
-    """Resolve the manifest path. Precedence: --manifest > $FKB_WORKSPACE > XDG path.
+    """Resolve the manifest path. Precedence: --manifest > XDG path.
 
     No upward-from-cwd search — the workspace is single and fixed per machine.
+    Relocate the whole fkb home with XDG_CONFIG_HOME, or target one manifest with --manifest.
     """
     if override:
         return Path(override).expanduser().resolve()
-    env = os.environ.get("FKB_WORKSPACE")
-    if env:
-        return Path(env).expanduser().resolve()
     return config_dir() / "workspace.okf.yaml"
 
 
@@ -212,7 +210,7 @@ def load_workspace(manifest_path: Path | None = None) -> Workspace:
     """Load, validate, and resolve the workspace manifest."""
     path = manifest_path or manifest_location()
     if not path.exists():
-        raise ManifestError(f"no workspace configured at {path} — run install-glue (or set $FKB_WORKSPACE)")
+        raise ManifestError(f"no workspace configured at {path} — run install-glue first")
 
     try:
         data = _yaml().load(path.read_text(encoding="utf-8"))

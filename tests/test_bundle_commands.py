@@ -19,11 +19,11 @@ SCRIPTS = REPO_ROOT / "skills" / "fkb" / "scripts"
 INSTALL_GLUE = SCRIPTS / "install-glue"
 
 
-def _base_env(manifest_path: Path) -> dict[str, str]:
+def _base_env(cfg: Path) -> dict[str, str]:
     return {
         "PATH": subprocess.os.environ["PATH"],
         "HOME": subprocess.os.environ["HOME"],
-        "FKB_WORKSPACE": str(manifest_path),
+        "XDG_CONFIG_HOME": str(cfg.parent),
     }
 
 
@@ -55,7 +55,7 @@ def _run(cfg: Path, script: str, *args: str) -> subprocess.CompletedProcess[str]
         text=True,
         check=False,
         stdin=subprocess.DEVNULL,
-        env=_base_env(cfg / "workspace.okf.yaml"),
+        env=_base_env(cfg),
     )
 
 

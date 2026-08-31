@@ -23,7 +23,7 @@ fkb delegates in prose to the `kb-*` skills and runs Python helpers through `uv`
 dependencies fail silently unless you check. **Every fkb skill's FIRST act is a preflight:**
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps
 ```
 
 - exit 0 → `uv` and all required kb skills (`kb`, `kb-init`, `kb-ingest`, `kb-query`, `kb-lint`) are present.
@@ -32,8 +32,8 @@ uv run ~/.config/federated-knowledge/manifest.py check-deps
   bypassing kb also bypasses OKF conformance.
 
 You also need a workspace. `install-glue` creates it at the fixed path
-`~/.config/federated-knowledge/workspace.okf.yaml` and copies `manifest.py` beside it; every command
-above resolves that fixed location (or `$FKB_WORKSPACE`), so it works from any directory.
+`${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/workspace.okf.yaml` and copies `manifest.py`
+beside it; every command above resolves that fixed location, so it works from any directory.
 
 ## The manifest is the single source of truth
 
@@ -42,10 +42,10 @@ above resolves that fixed location (or `$FKB_WORKSPACE`), so it works from any d
 through the deterministic helper:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py list                      # resolved bundles
-uv run ~/.config/federated-knowledge/manifest.py resolve <bundle>          # one bundle as JSON
-uv run ~/.config/federated-knowledge/manifest.py can-reference <from> <to> # exit 0 allow / 1 deny
-uv run ~/.config/federated-knowledge/manifest.py validate                  # manifest well-formed?
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list                      # resolved bundles
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" resolve <bundle>          # one bundle as JSON
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference <from> <to> # exit 0 allow / 1 deny
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate                  # manifest well-formed?
 ```
 
 ## OKF references are local

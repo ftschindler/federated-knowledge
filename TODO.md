@@ -4,9 +4,11 @@
 
 - [ ] **Prose pass on the 6 `fkb-*` SKILL.md files** — voice/clarity review
       _(depends on: my factual pass below landing first)_
+  - fkb-query: do not install, simply offer
 - [ ] **Read/check the verbatim AGENTS.md block** in `install-glue` — it lands in
       every user's agent instructions, so the voice should be yours
       _(DECISIONS.md open question 4)_
+  - hardcoded workspace yml in the block?
 - [ ] **Decide the launcher scope** — currently option-2-lite (copied script at
       `~/.config/.../manifest.py`, invoked via `uv run`); no PATH shim / `fkb`
       command. Confirm that's enough, or ask for a real PATH binary
@@ -25,10 +27,20 @@
 - [x] **Make `create-bundle` write a minimal conformant OKF bundle** — write a
       bundle-root `index.md` with `okf_version: "0.2"` and a reserved `log.md`,
       update tests, and keep the README line 290 wording truthful.
-- [ ] **Factual pass on the 4 path-migrated SKILL.md** (`fkb-ingest`,
+- [x] **Factual pass on the 4 path-migrated SKILL.md** (`fkb-ingest`,
       `fkb-query`, `fkb-lint`, `fkb-promote`) — verify every invocation, exit
       code, and output-format claim matches what `manifest.py` and the commands
       actually do _(unblocks Felix's prose pass)_
+- [ ] **Drop `$FKB_WORKSPACE`** — it overlaps `XDG_CONFIG_HOME` (whole-home
+      relocation) and `--manifest` (explicit targeting). Remove the branch in
+      `manifest_location`, update docstring + not-found error, migrate the test
+      usages to `--manifest` or a tmp `XDG_CONFIG_HOME`. Precedence becomes
+      `--manifest` > XDG path.
+- [ ] **Make skill invocations honor `XDG_CONFIG_HOME`** — `install-glue` copies
+      scripts to `$XDG_CONFIG_HOME/federated-knowledge`, but the skills hardcode
+      `~/.config/...`, which breaks for users with a custom `XDG_CONFIG_HOME`.
+      Switch to `${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/...` across
+      the 6 SKILL.md files, the AGENTS.md block in `install-glue`, and the README.
 
 ### Test coverage (current `test_skills.py` is a 3-test smoke layer only)
 

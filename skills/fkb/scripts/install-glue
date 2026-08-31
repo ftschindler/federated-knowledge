@@ -63,7 +63,7 @@ unrestricted) and cites each hit bundle-qualified.
 - Moving a concept to a more-open tier (`fkb-promote`) is irreversible disclosure — human-gated.
 
 **Preflight:** the `fkb-*` skills delegate to the `kb-*` skills and need `uv`. If
-`uv run ~/.config/federated-knowledge/manifest.py check-deps` fails, stop and install what it names.
+`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps` fails, stop and install what it names.
 
 If no manifest is configured at the path above, fkb is not set up on this machine — skip it and
 proceed normally.
@@ -90,9 +90,9 @@ def starter_manifest(workspace_root: str) -> str:
 workspace_root: {workspace_root}
 
 # Add bundles with the helper commands, e.g.:
-#   uv run ~/.config/federated-knowledge/clone-bundle <url> <name> [referenceable_by]
-#   uv run ~/.config/federated-knowledge/add-bundle <name> <path>
-#   uv run ~/.config/federated-knowledge/create-bundle <name>
+#   uv run "${{XDG_CONFIG_HOME:-$HOME/.config}}/federated-knowledge/clone-bundle" <url> <name> [referenceable_by]
+#   uv run "${{XDG_CONFIG_HOME:-$HOME/.config}}/federated-knowledge/add-bundle" <name> <path>
+#   uv run "${{XDG_CONFIG_HOME:-$HOME/.config}}/federated-knowledge/create-bundle" <name>
 bundles:
 """
 

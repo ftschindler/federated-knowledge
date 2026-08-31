@@ -18,7 +18,7 @@ Wraps [kb-ingest](../fkb/SKILL.md#route-to-the-right-skill). fkb-ingest owns **w
 ## 1. Preflight (mandatory)
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-ingest
 ```
 
 Exit 4 → STOP; the message names what is missing — install `uv`, or run
@@ -28,7 +28,7 @@ bypasses OKF conformance and the trust model.
 Load the bundle set:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py list
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list
 ```
 
 ## 2. Classify the target bundle — FAIL CLOSED
@@ -61,7 +61,7 @@ Two checks, both must pass:
 If the new concept references another bundle B, enforce the leak rule first:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py can-reference <target> <B>   # exit 0 allow / 1 deny
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference <target> <B>   # exit 0 allow / 1 deny
 ```
 
 Deny → do not write that link. Allow → emit the link as B's published URL if B has `publish`, else a

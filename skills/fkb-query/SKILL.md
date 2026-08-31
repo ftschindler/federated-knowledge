@@ -19,7 +19,7 @@ fans out to every bundle; only writing is gated (see fkb-ingest).
 ## 1. Preflight (mandatory)
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps kb-query
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-query
 ```
 
 Exit 4 → STOP; the message names what is missing — surface this to the user and offer resolutions
@@ -29,7 +29,7 @@ never install anything unprompted!
 Load the bundle set:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py list
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list
 ```
 
 ## 2. Fan kb-query across bundles

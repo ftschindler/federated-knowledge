@@ -95,7 +95,7 @@ def test_copied_core_runs_from_config_dir(tmp_path: Path) -> None:
     env = {
         "PATH": subprocess.os.environ["PATH"],
         "HOME": subprocess.os.environ["HOME"],
-        "FKB_WORKSPACE": str(cfg / "workspace.okf.yaml"),
+        "XDG_CONFIG_HOME": str(xdg),
     }
     r = subprocess.run(
         ["uv", "run", "--quiet", str(cfg / "manifest.py"), "validate"],
@@ -106,3 +106,29 @@ def test_copied_core_runs_from_config_dir(tmp_path: Path) -> None:
     )
     assert r.returncode == 0
     assert "0 bundle(s)" in r.stdout
+
+
+def test_scripts_resolve_via_xdg_shell_form(tmp_path: Path) -> None:
+    xdg = tmp_path / "custom-xdg"
+    _run(xdg)
+    env = {
+        "PATH": subprocess.os.environ["PATH"],
+        "HOME": subprocess.os.environ["HOME"],
+        "XDG_CONFIG_HOME": str(xdg),
+    }
+    r = subprocess.run(
+        'uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate',
+        shell=True,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+    assert r.returncode == 0, r.stderr
+
+
+def test_starter_manifest_emits_literal_xdg_form(tmp_path: Path) -> None:
+    xdg = tmp_path / "xdg"
+    _run(xdg)
+    text = (_cfg(xdg) / "workspace.okf.yaml").read_text()
+    assert '"${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/clone-bundle"' in text

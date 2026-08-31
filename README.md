@@ -225,14 +225,14 @@ conformance.
 ## manifest.py - the deterministic core
 
 A zero-install Python helper every `fkb` skill calls, run via `uv` (PEP 723 inline deps). After
-`install-glue` it lives at `~/.config/federated-knowledge/manifest.py`; invoke it there.
+`install-glue` it lives under `${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/`; invoke it there.
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py list                      # resolved bundles
-uv run ~/.config/federated-knowledge/manifest.py resolve <bundle>          # one bundle as JSON
-uv run ~/.config/federated-knowledge/manifest.py can-reference <from> <to> # exit 0 allow / 1 deny
-uv run ~/.config/federated-knowledge/manifest.py check-deps                # exit 0 uv+kb present / 4 missing
-uv run ~/.config/federated-knowledge/manifest.py validate                  # exit 0 well-formed / 2 malformed
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list                      # resolved bundles
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" resolve <bundle>          # one bundle as JSON
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference <from> <to> # exit 0 allow / 1 deny
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps                # exit 0 uv+kb present / 4 missing
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate                  # exit 0 well-formed / 2 malformed
 ```
 
 Tests and developer setup live in [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -273,7 +273,7 @@ checkout for the OKF root and asks you to confirm or pick the subdir when it is 
 that subdir as the bundle's `path`.
 
 ```bash
-uv run ~/.config/federated-knowledge/clone-bundle <url> <name> [referenceable_by]
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/clone-bundle" <url> <name> [referenceable_by]
 ```
 
 **`add-bundle <path>`** — a bundle already checked out somewhere on your disk, which you want to
@@ -281,7 +281,7 @@ federate without moving. It takes the local path as-is (absolute, so `workspace_
 confirms the OKF root, asks for the policy, and adds the line. Nothing is cloned or relocated.
 
 ```bash
-uv run ~/.config/federated-knowledge/add-bundle <name> <path> [referenceable_by]
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/add-bundle" <name> <path> [referenceable_by]
 ```
 
 **`create-bundle <name>`** — a brand-new bundle you want to author into, whether to share or for
@@ -289,7 +289,7 @@ private notes. It scaffolds a minimal conformant OKF bundle under `workspace_roo
 `writable: true` and the sealed `referenceable_by: []`, and registers it.
 
 ```bash
-uv run ~/.config/federated-knowledge/create-bundle <name> [referenceable_by]
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/create-bundle" <name> [referenceable_by]
 ```
 
 Each command ends by showing the manifest line it wrote and the resolved policy, so you can see what

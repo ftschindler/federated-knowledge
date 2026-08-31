@@ -20,7 +20,7 @@ and why promotion is a deliberate, gated act.
 ## 1. Preflight (mandatory)
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-ingest
 ```
 
 Exit 4 → STOP; the message names what is missing — install `uv`, or run
@@ -29,8 +29,8 @@ Exit 4 → STOP; the message names what is missing — install `uv`, or run
 Resolve source and target policy:
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py resolve <source-bundle>
-uv run ~/.config/federated-knowledge/manifest.py resolve <target-bundle>
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" resolve <source-bundle>
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" resolve <target-bundle>
 ```
 
 ## 2. Gate — require explicit human sign-off

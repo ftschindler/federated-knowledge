@@ -18,8 +18,8 @@ single-bundle linter structurally cannot do: **cross-bundle** rules.
 ## 1. Preflight (mandatory)
 
 ```bash
-uv run ~/.config/federated-knowledge/manifest.py check-deps kb-lint
-uv run ~/.config/federated-knowledge/manifest.py validate      # manifest itself must be well-formed first
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-lint
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate      # manifest itself must be well-formed first
 ```
 
 check-deps exit 4 → STOP; the message names what is missing — install `uv`, or run
@@ -45,7 +45,7 @@ For every markdown link that crosses from bundle A into bundle B:
 1. **Leak rule.** Verify the reference is permitted:
 
    ```bash
-   uv run ~/.config/federated-knowledge/manifest.py can-reference A B
+   uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference A B
    ```
 
    Exit 1 (DENY) → a **leak violation**: A points at B but B does not list A in `referenceable_by`.

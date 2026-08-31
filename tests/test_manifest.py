@@ -187,13 +187,7 @@ def test_manifest_location_prefers_override() -> None:
     assert manifest.manifest_location("/tmp/x.yaml") == Path("/tmp/x.yaml").resolve()
 
 
-def test_manifest_location_uses_fkb_workspace(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("FKB_WORKSPACE", "/tmp/env.yaml")
-    assert manifest.manifest_location() == Path("/tmp/env.yaml").resolve()
-
-
 def test_manifest_location_falls_back_to_xdg(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("FKB_WORKSPACE", raising=False)
     monkeypatch.setenv("XDG_CONFIG_HOME", "/tmp/xdg")
     assert manifest.manifest_location() == Path("/tmp/xdg/federated-knowledge/workspace.okf.yaml")
 
@@ -203,10 +197,9 @@ def test_manifest_location_falls_back_to_xdg(monkeypatch: pytest.MonkeyPatch) ->
 
 def _run(manifest_path: Path | None, *args: str) -> subprocess.CompletedProcess[str]:
     env = {"PATH": subprocess.os.environ["PATH"], "HOME": subprocess.os.environ["HOME"]}
-    if manifest_path is not None:
-        env["FKB_WORKSPACE"] = str(manifest_path)
+    extra = ["--manifest", str(manifest_path)] if manifest_path is not None else []
     return subprocess.run(
-        ["uv", "run", "--quiet", str(MANIFEST_PY), *args],
+        ["uv", "run", "--quiet", str(MANIFEST_PY), *extra, *args],
         capture_output=True,
         text=True,
         check=False,
