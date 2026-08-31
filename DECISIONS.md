@@ -73,26 +73,20 @@ green unit suite.
 
 ## Open questions for you
 
-1. **The launcher (`~/.config/.../manifest.py` invoked via `uv run`).** I did
-   NOT build a separate PATH shim or symlink — the "launcher" is just the copied
-   script at the fixed path, invoked `uv run ~/.config/federated-knowledge/…`.
-   That is option-2-lite: one stable path, no PATH pollution. If you wanted an
-   actual `fkb` command on PATH, that's not done.
-
-2. **`--from .` dev-loop flag** is implemented in install-glue (copies scripts
+1. **`--from .` dev-loop flag** is implemented in install-glue (copies scripts
    from a repo checkout) but I did NOT wire the symlink-your-checkout dev flow
    from the README's "Work on the skills" section into anything automated — it
    stays the documented manual `ln -s` loop.
 
-3. **AGENTS.md block content** — I wrote the verbatim block (query-first,
+2. **AGENTS.md block content** — I wrote the verbatim block (query-first,
    ingest-to-capture, reference rule, promote-is-gated, preflight, graceful
    skip). Give it a read in `install-glue`; it's the prose that lands in every
    user's agent instructions, so your voice matters most there.
 
-4. **`fkb-lint` / `fkb-promote` / `fkb-ingest` / `fkb-query` SKILL.md** were only
-   migrated (invocation paths), NOT re-examined against the new Python core's
-   exact output formats. They reference `manifest.py resolve`/`can-reference`/
-   `list` which all work, but a close read for prose drift is worth doing.
+3. **`fkb-lint` / `fkb-promote` / `fkb-ingest` / `fkb-query` SKILL.md** had their
+   factual pass done (invocations, exit codes, `resolved_path`, and upstream kb
+   hand-off verified). The remaining prose/voice pass is Felix's, tracked in
+   TODO.md.
 
 ## What I deliberately did NOT touch
 

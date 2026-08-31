@@ -9,9 +9,9 @@
       every user's agent instructions, so the voice should be yours
       _(DECISIONS.md open question 4)_
   - hardcoded workspace yml in the block?
-- [ ] **Decide the launcher scope** — currently option-2-lite (copied script at
-      `~/.config/.../manifest.py`, invoked via `uv run`); no PATH shim / `fkb`
-      command. Confirm that's enough, or ask for a real PATH binary
+- [x] **Launcher scope decided: option-2-lite** — helper scripts live at the fixed
+      config-dir path (`${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/`),
+      invoked via `uv run`; no PATH shim / `fkb` command. Confirmed sufficient.
       _(DECISIONS.md open question 2)_
 
 ## For me (agent)
