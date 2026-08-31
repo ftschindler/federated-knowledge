@@ -19,8 +19,8 @@ responsibility needs the manifest; every `kb` responsibility is single-bundle an
 
 ## Prerequisites (check before anything)
 
-fkb delegates in prose to the `kb-*` skills — there is no code import, so a missing kb skill fails
-silently unless you check. **Every fkb skill's FIRST act is a preflight:**
+fkb delegates in prose to the `kb-*` skills and runs Python helpers through `uv`; missing
+dependencies fail silently unless you check. **Every fkb skill's FIRST act is a preflight:**
 
 ```bash
 uv run ~/.config/federated-knowledge/manifest.py check-deps
@@ -47,6 +47,13 @@ uv run ~/.config/federated-knowledge/manifest.py resolve <bundle>          # one
 uv run ~/.config/federated-knowledge/manifest.py can-reference <from> <to> # exit 0 allow / 1 deny
 uv run ~/.config/federated-knowledge/manifest.py validate                  # manifest well-formed?
 ```
+
+## OKF references are local
+
+Before deciding OKF conformance, read the local references that ship with this skill:
+
+- `references/okf-v0.2.md` — the normative subset fkb relies on.
+- `references/okf-minimal-bundle.md` — the exact minimal bundle shape `create-bundle` writes.
 
 ## The reference rule (leak control)
 

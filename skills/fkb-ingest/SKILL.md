@@ -21,8 +21,9 @@ Wraps [kb-ingest](../fkb/SKILL.md#route-to-the-right-skill). fkb-ingest owns **w
 uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
 ```
 
-Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`. **Never hand-roll the ingest** —
-that bypasses OKF conformance and the trust model.
+Exit 4 → STOP; the message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills. **Never hand-roll the ingest** — that
+bypasses OKF conformance and the trust model.
 
 Load the bundle set:
 
@@ -46,8 +47,9 @@ less reuse; a wrongly-public one is irreversible disclosure (git history keeps i
 
 Two checks, both must pass:
 
-1. **Writable gate.** The target must be `writable: true` (`manifest.py resolve <target>`). A
-   read-only upstream is a source, never a write target.
+1. **Writable gate.** The target must be `writable: true` (`manifest.py resolve <target>`). Use the
+   returned `resolved_path` for filesystem work. A read-only upstream is a source, never a write
+   target.
 2. **Disclosure gate.** If your classification places the source into a bundle **more open** than the
    sealed default (e.g. anything with `referenceable_by: "*"` or a published `publish` URL), this is
    irreversible disclosure → **require explicit human sign-off** before proceeding. State plainly:
@@ -67,10 +69,11 @@ workspace-relative path (never a raw local absolute path). For a read-only upstr
 record the reference as an OKF `sources[]` provenance entry (its `publish` URL + a `last_modified`
 signal), so provenance survives a broken live link.
 
-## 5. Delegate the write to kb-ingest
+## 5. Hand off to kb-ingest
 
-`cd` into `target.path` and invoke **kb-ingest** to do the actual capture — the concept file, and
-that bundle's own `index.md` / `log.md`. fkb writes nothing in the bundle itself.
+Hand off to **kb-ingest** with the target bundle root set to `resolved_path`. kb-ingest owns the
+actual capture — the concept file, and that bundle's own `index.md` / `log.md`. fkb writes nothing in
+the bundle itself.
 
 ## 6. Report
 
@@ -81,4 +84,4 @@ State the chosen bundle, why, whether a disclosure gate fired, and the concept p
 - Never write into a non-`writable` bundle.
 - Never place into a more-open bundle without human sign-off.
 - Never emit a cross-link that `can-reference` denies.
-- Never author bundle content directly — always via kb-ingest.
+- Never author bundle content directly — always hand off to kb-ingest.

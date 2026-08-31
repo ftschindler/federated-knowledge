@@ -16,12 +16,15 @@
 
 ### Corrections uncovered this session
 
-- [ ] **Fix README line 290** — `create-bundle` does NOT scaffold "a conformant
-      OKF bundle (via `kb-init`)"; the standalone script writes a minimal OKF
-      stub. Reword to say the script scaffolds a minimal bundle, and that the
-      `fkb-init` skill drives real `kb-init` for full conformance.
-      _(README line 221 "skills delegate to kb-init" stays true — that's the skill,
-      not the script)_
+- [x] **Serve the OKF v0.2 reference with the skills** — add shared references under
+      `skills/fkb/references/` so agents do not rely on memory or web access for
+      conformance decisions.
+  - [x] add `okf-v0.2.md` (normative parts we rely on)
+  - [x] add `okf-minimal-bundle.md` (the exact minimal bundle shape `create-bundle`
+        writes)
+- [x] **Make `create-bundle` write a minimal conformant OKF bundle** — write a
+      bundle-root `index.md` with `okf_version: "0.2"` and a reserved `log.md`,
+      update tests, and keep the README line 290 wording truthful.
 - [ ] **Factual pass on the 4 path-migrated SKILL.md** (`fkb-ingest`,
       `fkb-query`, `fkb-lint`, `fkb-promote`) — verify every invocation, exit
       code, and output-format claim matches what `manifest.py` and the commands

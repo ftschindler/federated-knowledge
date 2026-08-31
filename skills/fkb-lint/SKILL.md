@@ -22,16 +22,17 @@ uv run ~/.config/federated-knowledge/manifest.py check-deps kb-lint
 uv run ~/.config/federated-knowledge/manifest.py validate      # manifest itself must be well-formed first
 ```
 
-check-deps exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
+check-deps exit 4 → STOP; the message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills.
 validate exit 2 → the manifest is malformed; fix it before linting bundles.
 
 ## 2. Per-bundle conformance (delegate to kb-lint)
 
 For **each** bundle in the manifest, run kb-lint's deterministic conformance script against its
-`path`:
+`resolved_path`:
 
 ```bash
-node <kb-lint-dir>/scripts/conformance.mjs <bundle.path>
+node <kb-lint-dir>/scripts/conformance.mjs <bundle.resolved_path>
 ```
 
 This catches within-bundle drift: frontmatter, reserved-file shape, broken *intra*-bundle links.

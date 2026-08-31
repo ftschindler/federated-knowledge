@@ -8,18 +8,15 @@
 Usage:
   create-bundle <name> [referenceable_by] [--writable] [--publish URL]
 
-Scaffolds a conformant OKF bundle via kb-init at <workspace_root>/<name>, then
+Scaffolds a minimal conformant OKF bundle at <workspace_root>/<name>, then
 registers it. A bundle you author into defaults to writable:true and the sealed
 referenceable_by:[]; both prompted for when absent and interactive.
-
-kb-init is a skill (prose), not a callable binary, so this script scaffolds a
-minimal OKF bundle directly and reports that the fkb-init skill should invoke
-kb-init for full conformance when driven by an agent.
 """
 
 from __future__ import annotations
 
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 import _fkb_bundle as fkb
@@ -29,14 +26,18 @@ _MIN_ARGC = 1
 
 
 def _scaffold_okf(bundle_dir: Path, name: str) -> None:
-    """Write a minimal OKF bundle (index.md + log.md). Full conformance is kb-init's job."""
+    """Write a minimal OKF v0.2 bundle (reserved index.md + log.md)."""
     bundle_dir.mkdir(parents=True, exist_ok=True)
     index = bundle_dir / "index.md"
     if not index.exists():
-        index.write_text(f"# {name}\n\nAn OKF knowledge bundle.\n", encoding="utf-8")
+        index.write_text(
+            f'---\nokf_version: "0.2"\n---\n# {name}\n\nAn OKF knowledge bundle.\n',
+            encoding="utf-8",
+        )
     log = bundle_dir / "log.md"
     if not log.exists():
-        log.write_text("# Log\n", encoding="utf-8")
+        today = datetime.now(UTC).date().isoformat()
+        log.write_text(f"# Log\n\n## {today}\n\n* **Initialization**: Created bundle.\n", encoding="utf-8")
 
 
 def main(argv: list[str]) -> None:

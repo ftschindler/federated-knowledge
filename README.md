@@ -164,7 +164,7 @@ bundle and passes through the gates. In both, `fkb` decides *which bundle and wh
   │             more open than sealed? ─── yes → human sign-off !   |
   │  cross-link can-reference <target> <B>  → drop link or emit URL │
   └───────────────────────────────┬─────────────────────────────────┘
-                                  │  cd target.path, delegate the write
+                                  │  target.resolved_path, hand off the write
                                   ▼
                              ┌───────────┐
                              │ kb-ingest │  writes concept + index.md + log.md
@@ -285,8 +285,8 @@ uv run ~/.config/federated-knowledge/add-bundle <name> <path> [referenceable_by]
 ```
 
 **`create-bundle <name>`** — a brand-new bundle you want to author into, whether to share or for
-private notes. It scaffolds a conformant OKF bundle (via `kb-init`) under `workspace_root`, defaults
-it to `writable: true` and the sealed `referenceable_by: []`, and registers it.
+private notes. It scaffolds a minimal conformant OKF bundle under `workspace_root`, defaults it to
+`writable: true` and the sealed `referenceable_by: []`, and registers it.
 
 ```bash
 uv run ~/.config/federated-knowledge/create-bundle <name> [referenceable_by]

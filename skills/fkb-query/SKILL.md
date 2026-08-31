@@ -22,7 +22,9 @@ fans out to every bundle; only writing is gated (see fkb-ingest).
 uv run ~/.config/federated-knowledge/manifest.py check-deps kb-query
 ```
 
-Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
+Exit 4 → STOP; the message names what is missing — surface this to the user and offer resolutions
+(install `uv`, run `npx skills add stjbrown/agent-knowledge` for the kb skills),
+never install anything unprompted!
 
 Load the bundle set:
 
@@ -32,8 +34,8 @@ uv run ~/.config/federated-knowledge/manifest.py list
 
 ## 2. Fan kb-query across bundles
 
-For **each** bundle in the manifest (writable or not — reading is allowed everywhere), `cd` into its
-`path` and run **kb-query** for the user's question. Collect each bundle's answer with its source
+For **each** bundle in the manifest (writable or not — reading is allowed everywhere), hand off to
+**kb-query** with the bundle root set to `resolved_path`. Collect each bundle's answer with its source
 concept paths.
 
 ## 3. Merge and rank
@@ -51,7 +53,8 @@ Every citation must name **which bundle** it came from, so tier is always visibl
 - Published bundle → its `publish` URL + concept path (no `docs/` segment — MkDocs strips it).
 - Unpublished bundle → `bundle:concept/path.md`, e.g. `private:decisions/pricing.md`.
 
-Use `manifest.py resolve <bundle>` to get the `publish` base when formatting a URL citation.
+Use `manifest.py resolve <bundle>` to get the `publish` base and `resolved_path` when formatting a
+URL citation.
 
 ## Must not
 

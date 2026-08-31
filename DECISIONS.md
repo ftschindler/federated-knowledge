@@ -43,13 +43,11 @@ These are the decisions you did NOT explicitly make — flag any you'd do differ
   bundles. I relaxed the core so an empty (or `None`) `bundles:` is a valid
   empty federation, not an error; a *missing* `bundles:` key stays an error. The
   original "empty is error" test was inverted to lock the new contract.
-- **`create-bundle` scaffolds a minimal bundle directly** (index.md + log.md),
-  NOT via `kb-init`. Reason: `kb-init` is a skill (prose for an agent), not a
-  callable binary — a plain script cannot invoke it. The script writes a minimal
-  OKF stub; the `fkb-init` skill prose is where an agent would drive real
-  `kb-init` for full conformance. **This is the biggest divergence from the
-  README** (which still says "scaffolds a conformant OKF bundle (via kb-init)").
-  See open questions.
+- **`create-bundle` scaffolds a minimal conformant OKF bundle directly**
+  (bundle-root `index.md` with `okf_version: "0.2"`, plus a reserved `log.md`).
+  `kb-init` is a skill (prose for an agent), not a callable binary, so the
+  standalone script owns the smallest conformant scaffold. The local OKF
+  references under `skills/fkb/references/` document the exact shape.
 - **Bundle commands are flag-driven, ask-if-absent, TTY-gated** — they prompt
   only when stdin is a TTY; non-interactive (tests, or the skill passing flags)
   takes the fail-closed default. This is how the `fkb-init` skill drives them.
@@ -75,32 +73,23 @@ green unit suite.
 
 ## Open questions for you
 
-1. **`create-bundle` vs `kb-init` (most important).** The script scaffolds a
-   minimal stub, not a kb-init-conformant bundle, because a script can't call a
-   skill. Options: (a) leave as-is — the stub is enough to register, and the
-   `fkb-init` skill drives real kb-init when an agent runs it; (b) have
-   `create-bundle` shell out to some kb-init CLI if one exists (I did not find
-   one); (c) drop `create-bundle`'s scaffolding entirely and make bundle
-   creation skill-only. I chose (a). The README's "via kb-init" wording should
-   change to match whichever you pick.
-
-2. **The launcher (`~/.config/.../manifest.py` invoked via `uv run`).** I did
+1. **The launcher (`~/.config/.../manifest.py` invoked via `uv run`).** I did
    NOT build a separate PATH shim or symlink — the "launcher" is just the copied
    script at the fixed path, invoked `uv run ~/.config/federated-knowledge/…`.
    That is option-2-lite: one stable path, no PATH pollution. If you wanted an
    actual `fkb` command on PATH, that's not done.
 
-3. **`--from .` dev-loop flag** is implemented in install-glue (copies scripts
+2. **`--from .` dev-loop flag** is implemented in install-glue (copies scripts
    from a repo checkout) but I did NOT wire the symlink-your-checkout dev flow
    from the README's "Work on the skills" section into anything automated — it
    stays the documented manual `ln -s` loop.
 
-4. **AGENTS.md block content** — I wrote the verbatim block (query-first,
+3. **AGENTS.md block content** — I wrote the verbatim block (query-first,
    ingest-to-capture, reference rule, promote-is-gated, preflight, graceful
    skip). Give it a read in `install-glue`; it's the prose that lands in every
    user's agent instructions, so your voice matters most there.
 
-5. **`fkb-lint` / `fkb-promote` / `fkb-ingest` / `fkb-query` SKILL.md** were only
+4. **`fkb-lint` / `fkb-promote` / `fkb-ingest` / `fkb-query` SKILL.md** were only
    migrated (invocation paths), NOT re-examined against the new Python core's
    exact output formats. They reference `manifest.py resolve`/`can-reference`/
    `list` which all work, but a close read for prose drift is worth doing.

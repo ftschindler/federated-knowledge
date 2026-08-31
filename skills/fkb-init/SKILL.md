@@ -84,6 +84,8 @@ the command runs non-interactively — you are the one asking, not the script.
   ```
 
   Defaults `writable:true` (you author into it) and sealed `referenceable_by:[]`.
+  The exact minimal OKF bundle shape is documented in
+  `../fkb/references/okf-minimal-bundle.md`.
 
 For **mutual peers**, remember to add each to the other's `referenceable_by`.
 

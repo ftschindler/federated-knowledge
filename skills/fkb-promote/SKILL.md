@@ -23,7 +23,8 @@ and why promotion is a deliberate, gated act.
 uv run ~/.config/federated-knowledge/manifest.py check-deps kb-ingest
 ```
 
-Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
+Exit 4 → STOP; the message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills.
 
 Resolve source and target policy:
 
@@ -41,7 +42,8 @@ anything, state plainly and wait for an explicit yes:
 > [published at `<url>` | referenceable by `<who>`]. This is irreversible — git history in `<target>`
 > will keep this content permanently. Confirm promotion?"
 
-Also verify the target is `writable: true`; a read-only upstream can never be a promotion target.
+Also verify the target is `writable: true`; use `resolved_path` for filesystem work. A read-only
+upstream can never be a promotion target.
 
 ## 3. Confidentiality review of the content itself
 
@@ -50,10 +52,11 @@ client/employer names, internal hostnames, codenames, secrets. `manifest.py` enf
 rule mechanically, but the semantic "is this prose safe to disclose" judgment is human. If anything
 is borderline, redact it in the promoted copy or abort and report.
 
-## 4. Delegate the re-write to kb-ingest
+## 4. Hand off the re-write to kb-ingest
 
-`cd` into `target.path` and invoke **kb-ingest** to author the concept into the target bundle
-(concept file + that bundle's `index.md` / `log.md`). Re-resolve any cross-links for the new home:
+Hand off to **kb-ingest** with the target bundle root set to `resolved_path`, so kb-ingest authors the
+concept into the target bundle (concept file + that bundle's `index.md` / `log.md`). Re-resolve any
+cross-links for the new home:
 each must satisfy `can-reference <target> <B>`; drop or re-point links the target is not allowed to
 make.
 
@@ -76,4 +79,4 @@ re-resolved, and the fate of the source copy.
 - Never promote without explicit human confirmation.
 - Never promote into a `writable:false` bundle.
 - Never carry a cross-link into the target that `can-reference` denies.
-- Never author the promoted concept directly — always via kb-ingest.
+- Never author the promoted concept directly — always hand off to kb-ingest.

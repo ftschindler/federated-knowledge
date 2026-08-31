@@ -103,8 +103,10 @@ def test_create_bundle_scaffolds_and_registers(tmp_path: Path) -> None:
     cfg = _setup(tmp_path, root)
     r = _run(cfg, "create-bundle", "notes", "[]")
     assert r.returncode == 0
-    assert (root / "notes" / "index.md").is_file()
-    assert (root / "notes" / "log.md").is_file()
+    index = root / "notes" / "index.md"
+    log = root / "notes" / "log.md"
+    assert index.read_text().startswith('---\nokf_version: "0.2"\n---\n# notes\n')
+    assert "* **Initialization**: Created bundle." in log.read_text()
     text = _manifest_text(cfg)
     assert "notes: {path: notes" in text
     assert "writable: true" in text  # a bundle you author into defaults writable
