@@ -1,0 +1,25 @@
+README.md
+  s_e1e00713a8da84::t_a03b0914a2957d 292
+  s_e1e00713a8da84::t_57bc1111b0961a 66-67,69-73
+  s_e1e00713a8da84::t_663a7240eb2bac 125
+  s_e1e00713a8da84::t_1bf7eb46d07d23 276
+  s_e1e00713a8da84::t_2f65dc4cb28657 284
+  s_e1e00713a8da84::t_f2e906bd618c71 248
+  s_e1e00713a8da84::t_82c0a450fab1cf 221,225,227-228,231-235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "e3dcbf0731efbec2b2fe5433bd5a993de6eb592e",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

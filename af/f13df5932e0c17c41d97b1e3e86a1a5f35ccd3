@@ -1,0 +1,58 @@
+skills/fkb-ingest/SKILL.md
+  s_e7f2c230d5faa3::t_2f75d673ee525d 24-26,50-52
+  s_e7f2c230d5faa3::t_3a2a81b7983904 72,74-76,87
+TODO.md
+  s_e7f2c230d5faa3::t_66c2946d4d37a4 25-27
+  s_e7f2c230d5faa3::t_7ae48667ca366a 20-21,24
+  s_e7f2c230d5faa3::t_75abb36d4619e5 19,22-23
+skills/fkb/SKILL.md
+  s_e7f2c230d5faa3::t_8e27b602e9bfe1 22-23
+  s_e7f2c230d5faa3::t_7e0a6e29d006d2 51-57
+DECISIONS.md
+  s_e7f2c230d5faa3::t_8f971577bc3cb4 46-50,76,82,87,92
+README.md
+  s_e7f2c230d5faa3::t_f37928fa3354fb 167
+  s_e7f2c230d5faa3::t_1c83c69f6bbae3 288-289
+skills/fkb-lint/SKILL.md
+  s_e7f2c230d5faa3::t_2f75d673ee525d 25-26,32,35
+skills/fkb-init/SKILL.md
+  s_e7f2c230d5faa3::t_7e0a6e29d006d2 87-88
+skills/fkb/references/okf-v0.2.md
+  s_e7f2c230d5faa3::t_a464b0f3ca4835 1-60
+skills/fkb/scripts/create-bundle
+  s_e7f2c230d5faa3::t_70013375f44a1d 11,19,29,33-36,39-40
+skills/README.md
+  s_e7f2c230d5faa3::t_853285ded14c51 20-22
+tests/test_bundle_commands.py
+  s_e7f2c230d5faa3::t_3cf72e248e08e8 106-109
+skills/fkb/references/okf-minimal-bundle.md
+  s_e7f2c230d5faa3::t_a464b0f3ca4835 1-38
+skills/fkb-query/SKILL.md
+  s_e7f2c230d5faa3::t_3a2a81b7983904 37-38
+  h_0f8f9341a40674 25-27
+  s_e7f2c230d5faa3::t_2f75d673ee525d 56-57
+skills/fkb-promote/SKILL.md
+  s_e7f2c230d5faa3::t_3a2a81b7983904 55,57-59,82
+  s_e7f2c230d5faa3::t_2f75d673ee525d 26-27,45-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "aff13df5932e0c17c41d97b1e3e86a1a5f35ccd3",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_e7f2c230d5faa3": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "claude-opus-4.8"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

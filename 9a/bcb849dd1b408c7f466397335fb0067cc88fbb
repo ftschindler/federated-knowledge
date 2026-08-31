@@ -1,0 +1,29 @@
+tests/test_manifest.py
+  s_e1e00713a8da84::t_e89c55841c31da 252-316
+skills/fkb/scripts/manifest.py
+  s_e1e00713a8da84::t_1c25158d1364ff 428-431
+  s_e1e00713a8da84::t_f6f5de8abbaeba 73
+  s_e1e00713a8da84::t_2719291eeb7f1d 343-344,349,351,354-355
+  s_e1e00713a8da84::t_9f36fe366659c9 171
+  s_e1e00713a8da84::t_25d0fb8a04f073 419-427,432-446,450,459-460
+  s_e1e00713a8da84::t_a61eab774d494b 256-257,260,263,266-267,272,295
+  s_e1e00713a8da84::t_5473384c2e4d36 161-167
+  s_e1e00713a8da84::t_dc2a615bfce274 44
+  s_e1e00713a8da84::t_12eed0dc257b11 251-255,258-259,261-262,264-265,268-271,273-294,296-300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "9abcb849dd1b408c7f466397335fb0067cc88fbb",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

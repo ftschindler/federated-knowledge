@@ -1,0 +1,28 @@
+tests/test_install_glue.py
+  s_e1e00713a8da84::t_a44fc2c5f17622 1-108
+skills/fkb/scripts/install-glue
+  s_e1e00713a8da84::t_92b1fc18f23e3b 36
+  s_e1e00713a8da84::t_2d0dd4e8705772 1-35,37-164
+tests/test_manifest.py
+  s_e1e00713a8da84::t_01178154adb329 84-91
+  s_e1e00713a8da84::t_1c6b6e8812d40a 322-329
+skills/fkb/scripts/manifest.py
+  s_e1e00713a8da84::t_b1bf0103ef3fcb 290-297
+  s_e1e00713a8da84::t_a62bd31c4a453a 222-223,225-229
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "2994ed7b61280814221ce3f9cea8578119b642dd",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}

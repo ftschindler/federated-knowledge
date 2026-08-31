@@ -1,0 +1,22 @@
+TODO.md
+  s_e1e00713a8da84::t_0856f1526f2879 12-14
+DECISIONS.md
+  s_e1e00713a8da84::t_d3b0df15cb2aaf 86-89
+  s_e1e00713a8da84::t_d7cfb917dce336 76,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "8fd1cd93b5a195bb7859fbaa3d5a088ec83f83ef",
+  "prompts": {},
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
