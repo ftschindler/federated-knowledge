@@ -79,7 +79,8 @@ def test_print_agents_block_is_marker_wrapped(tmp_path: Path) -> None:
     assert r.stdout.startswith("<!-- BEGIN fkb")
     assert r.stdout.rstrip().endswith("<!-- END fkb -->")
     assert "fkb-query" in r.stdout
-    assert "referenceable_by" in r.stdout
+    assert "fkb-ingest" in r.stdout
+    assert "check-deps" in r.stdout
 
 
 def test_print_agents_block_does_not_touch_disk(tmp_path: Path) -> None:

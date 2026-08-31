@@ -46,27 +46,32 @@ AGENTS_BLOCK = """\
 <!-- BEGIN fkb (managed by federated-knowledge; edits between these markers are overwritten) -->
 ## Federated knowledge (fkb)
 
-Durable knowledge lives in privacy-tiered OKF bundles, federated by a single manifest at
-`~/.config/federated-knowledge/workspace.okf.yaml`. The `fkb-*` skills operate across all bundles;
-each bundle is a standalone OKF repo.
+Durable, hard-won knowledge — decisions, research, tool/config fixes — lives in privacy-tiered
+**knowledge bundles**: directories of plain markdown files with frontmatter (the OKF format), each a
+standalone git repo. One manifest ties them together, and the `fkb-*` skills read and write across
+them so a cold session can find what past sessions learned.
 
-**Query before you web-search.** `fkb-query "<question>"` fans across every bundle (reading is
-unrestricted) and cites each hit bundle-qualified.
+**See what's configured first.** Run
+`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list` to see the bundles
+and their tiers. If it reports no manifest (or the file does not exist), fkb is not set up on this
+machine — skip it and proceed normally.
 
-**Capture what's worth keeping** with `fkb-ingest` — it classifies the source to the right tier
-(fail-closed to the most-private bundle), gates disclosure, and delegates the write to `kb-ingest`.
+**Query before you web-search.** Use the `fkb-query` skill to answer from the bundles; it reads
+across all of them and cites each hit by which bundle it came from.
 
-**The rules that keep tiers from leaking:**
-- A concept in bundle A may reference bundle B only if A is in B's `referenceable_by`. Never
-  hand-wire a cross-tier link that violates it.
-- Never hand-edit bundle content — all writes go through the `kb-*` skills via `fkb-*`.
-- Moving a concept to a more-open tier (`fkb-promote`) is irreversible disclosure — human-gated.
+**Capture what's worth keeping** with the `fkb-ingest` skill. It picks the right privacy tier
+fail-closed (most-private by default), asks before anything more public, and files the note for you.
 
-**Preflight:** the `fkb-*` skills delegate to the `kb-*` skills and need `uv`. If
-`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps` fails, stop and install what it names.
+**Rules that keep tiers from leaking** (the skills enforce these; do not bypass them):
+- Never hand-edit bundle content — author only through the `fkb-*` skills.
+- A concept may link to another bundle only when the target bundle allows it; never hand-wire a
+  cross-tier link.
+- Moving a concept to a more-open tier (`fkb-promote`) is irreversible disclosure — always human-gated.
 
-If no manifest is configured at the path above, fkb is not set up on this machine — skip it and
-proceed normally.
+**Requires the kb skills + uv.** fkb wraps the single-bundle `kb-*` skills from
+[stjbrown/agent-knowledge](https://github.com/stjbrown/agent-knowledge) and runs helpers via `uv`. If
+`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps` fails, it
+names what is missing — install `uv`, or run `npx skills add stjbrown/agent-knowledge` — before using fkb.
 <!-- END fkb -->
 """
 
