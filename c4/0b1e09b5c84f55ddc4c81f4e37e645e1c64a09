@@ -1,0 +1,57 @@
+tests/test_bundle_commands.py
+  s_e1e00713a8da84::t_79761d99dea99a 58
+  s_e1e00713a8da84::t_062c5ba822b8c1 22,26
+tests/test_manifest.py
+  s_e1e00713a8da84::t_2936af60233b7c 200,202
+skills/fkb-query/SKILL.md
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 22,32
+skills/fkb/scripts/manifest.py
+  s_e1e00713a8da84::t_e71fe6aeec4984 213
+  s_e1e00713a8da84::t_a2f033f05d1da0 93,96
+  s_e1e00713a8da84::t_f3f5f4d4b2b9d4 19-20
+tests/test_install_glue.py
+  s_e1e00713a8da84::t_7d8105d48f4fce 98
+  s_e1e00713a8da84::t_ce127c62a63ac5 109-134
+skills/fkb-promote/SKILL.md
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 23,32-33
+README.md
+  s_e1e00713a8da84::t_6e64d5ffb80c3a 233-237,278,286,294
+  s_e1e00713a8da84::t_2d6630c442b5aa 230
+skills/fkb-init/SKILL.md
+  s_e1e00713a8da84::t_6a260375a4be5d 29-30
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 23,38,51,68,78,84,96
+TODO.md
+  s_e1e00713a8da84::t_70a60a4776eb3e 7,11
+  s_e1e00713a8da84::t_259c59226ff47b 30,34-43
+skills/fkb/SKILL.md
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 26,45-48
+  s_e1e00713a8da84::t_68e253500d2016 35-36
+skills/fkb-ingest/SKILL.md
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 21,31,64
+skills/fkb-lint/SKILL.md
+  s_e1e00713a8da84::t_a7b1b22d5d4cb1 21-22,48
+skills/fkb/scripts/install-glue
+  s_e1e00713a8da84::t_09cd87de98773e 66
+  s_e1e00713a8da84::t_fd9fbae8cdfb52 93-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "c40b1e09b5c84f55ddc4c81f4e37e645e1c64a09",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
