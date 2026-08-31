@@ -54,7 +54,7 @@ them so a cold session can find what past sessions learned.
 **See what's configured first.** Run
 `uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list` to see the bundles
 and their tiers. If it reports no manifest (or the file does not exist), fkb is not set up on this
-machine — skip it and proceed normally.
+machine — skip it silently and proceed normally. If it lists bundles, fkb is configured here; use it.
 
 **Query before you web-search.** Use the `fkb-query` skill to answer from the bundles; it reads
 across all of them and cites each hit by which bundle it came from.
@@ -68,10 +68,12 @@ fail-closed (most-private by default), asks before anything more public, and fil
   cross-tier link.
 - Moving a concept to a more-open tier (`fkb-promote`) is irreversible disclosure — always human-gated.
 
-**Requires the kb skills + uv.** fkb wraps the single-bundle `kb-*` skills from
-[stjbrown/agent-knowledge](https://github.com/stjbrown/agent-knowledge) and runs helpers via `uv`. If
-`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps` fails, it
-names what is missing — install `uv`, or run `npx skills add stjbrown/agent-knowledge` — before using fkb.
+**If the manifest exists but tooling is missing.** fkb wraps the single-bundle `kb-*` skills from
+[stjbrown/agent-knowledge](https://github.com/stjbrown/agent-knowledge) and runs helpers via `uv`.
+Only once a manifest is configured (above), a non-zero
+`uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps` means fkb is
+set up here but its dependencies are not installed — surface this to the user and offer the fix
+(install `uv`, or `npx skills add stjbrown/agent-knowledge`). Never install anything unprompted.
 <!-- END fkb -->
 """
 
