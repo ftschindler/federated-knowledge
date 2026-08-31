@@ -1,0 +1,52 @@
+tests/conftest.py
+  s_e1e00713a8da84::t_4db2dd07bd9e2d 14-17,21-65
+tests/test_onboarding.py
+  s_71bcec37d768d7::t_1b1f00dc969a22 1-83,85-111,113-126
+  s_71bcec37d768d7::t_b9b253a06194fb 84,112
+tests/test_skills.py
+  s_9b33d10728872b::t_9147971053ba95 145-146,158,165,186-187,196-197,207
+  s_9b33d10728872b::t_03ce7a2d5b6124 11-12,17-19,23-63,109-144,147-148,161-164,166-168,173-174,181-185,188-195,198-203,208-213,215-217,223,225-227,232,237-242,246-252
+  s_9b33d10728872b::t_51e387172fc687 169-172,204-206,214,218-222,224,228-230,233
+  s_9b33d10728872b::t_77aba7a450616f 231,234-235,243-245
+  s_9b33d10728872b::t_f27183d8825d75 149-156
+  s_9b33d10728872b::t_0245aed89f0e8c 177-180
+  s_9b33d10728872b::t_a23fa233ef330c 236
+  s_9b33d10728872b::t_38ed78a4d931f1 64-69,157,159-160,175-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "ecec4f60ed6d0e4780dff47911fd8c54e6007ecd",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_71bcec37d768d7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa91c9aa0ffeArCDhuJmSNJ5js",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_9b33d10728872b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa91bfdc3ffeIr4O1diMav1zhX",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    },
+    "s_e1e00713a8da84": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fb8a233b8ffeLgM5swCS8Ht3yf",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
