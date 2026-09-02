@@ -12,26 +12,31 @@ tags: [knowledge, okf, federation, fkb, lint, conformance]
 
 # fkb-lint — per-bundle conformance + cross-bundle leak audit
 
+**THIS SKILL INSTRUCTS YOU TO EXECUTE A LINT AUDIT.** Do not just read these instructions and stop.
+Follow the steps below to run conformance checks across all bundles.
+
 Wraps [kb-lint](../fkb/SKILL.md#route-to-the-right-skill) and adds the one class of check a
 single-bundle linter structurally cannot do: **cross-bundle** rules.
 
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-lint
-node <fkb-dir>/fkb/scripts/manifest.mjs validate      # manifest itself must be well-formed first
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-lint
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate      # manifest itself must be well-formed first
 ```
 
-check-kb exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`.
+check-deps exit 4 → STOP; the message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills.
 validate exit 2 → the manifest is malformed; fix it before linting bundles.
 
-## 2. Per-bundle conformance (delegate to kb-lint)
+## 2. Per-bundle conformance (EXECUTE the script)
 
-For **each** bundle in the manifest, run kb-lint's deterministic conformance script against its
-`path`:
+**CRITICAL**: Run the kb-lint conformance script for each bundle. Do not skip this step.
+
+Read the `kb-lint` skill docs, then execute for each bundle using the conformance script:
 
 ```bash
-node <kb-lint-dir>/scripts/conformance.mjs <bundle.path>
+node ~/.agents/skills/kb-lint/scripts/conformance.mjs <bundle.resolved_path>
 ```
 
 This catches within-bundle drift: frontmatter, reserved-file shape, broken *intra*-bundle links.
@@ -44,7 +49,7 @@ For every markdown link that crosses from bundle A into bundle B:
 1. **Leak rule.** Verify the reference is permitted:
 
    ```bash
-   node <fkb-dir>/fkb/scripts/manifest.mjs can-reference A B
+   uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference A B
    ```
 
    Exit 1 (DENY) → a **leak violation**: A points at B but B does not list A in `referenceable_by`.

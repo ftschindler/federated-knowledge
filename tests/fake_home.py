@@ -23,6 +23,11 @@ OPENCODE_VERSION = "1.18.25"
 # The upstream kb skills the fkb layer delegates to.
 KB_REPO = "stjbrown/agent-knowledge"
 
+# One allowance for every agent run. A run is an LLM driving tools, so its duration
+# swings with the tool path it picks: tests that take ~60s locally have twice blown
+# a 300s cap on a CI runner. A genuinely stuck run is caught by the job timeout.
+AGENT_RUN_TIMEOUT = 600
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FKB_SKILLS_DIR = REPO_ROOT / "skills"
 
@@ -61,6 +66,18 @@ class OpencodeResult:
             if ev.get("type") == "text" and "text" in part:
                 chunks.append(part["text"])
         return "\n".join(chunks)
+
+
+class OpencodeTimeoutError(AssertionError):
+    """An `opencode run` that outlived its allowance, carrying its partial transcript."""
+
+
+def _timeout_report(partial: OpencodeResult, timeout: int) -> str:
+    return (
+        f"opencode run exceeded {timeout}s and was killed.\n"
+        f"--- assistant transcript so far ---\n{partial.text.strip() or '(none)'}\n"
+        f"--- stderr ---\n{partial.stderr.strip() or '(empty)'}"
+    )
 
 
 @dataclass
@@ -111,20 +128,28 @@ class FakeHome:
             timeout=300,
         )
 
-    def run(self, message: str, *, cwd: Path | None = None, timeout: int = 180) -> OpencodeResult:
+    def run(self, message: str, *, cwd: Path | None = None, timeout: int = AGENT_RUN_TIMEOUT) -> OpencodeResult:
         """Drive `opencode run` non-interactively and capture parsed JSON events."""
         workdir = cwd or self.work
         workdir.mkdir(parents=True, exist_ok=True)
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             [str(self.opencode_bin), "run", "--format", "json", message],
             env=self.env,
             cwd=workdir,
-            capture_output=True,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout,
-            check=False,
         )
-        return OpencodeResult.parse(proc.stdout, proc.stderr, proc.returncode, workdir)
+        try:
+            stdout, stderr = proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            stdout, stderr = proc.communicate()
+            raise OpencodeTimeoutError(
+                _timeout_report(OpencodeResult.parse(stdout, stderr, -9, workdir), timeout)
+            ) from None
+        return OpencodeResult.parse(stdout, stderr, proc.returncode, workdir)
 
     @property
     def enter_command(self) -> str:
@@ -161,6 +186,30 @@ class FakeHome:
         )
 
 
+def _write_opencode_config(home: Path) -> None:
+    """Let the agent reach the fake home outside its working directory.
+
+    `opencode run` is non-interactive, so any permission prompt is auto-rejected.
+    The fkb skills live in `~/.agents/skills` and their glue in `~/.config`, both
+    outside the workdir, so without this every run dies on an `external_directory`
+    prompt before the skill can do — or refuse — anything. A real user grants this
+    once interactively; here we grant it up front.
+    """
+    config_dir = home / ".config" / "opencode"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    (config_dir / "opencode.json").write_text(
+        json.dumps(
+            {
+                "$schema": "https://opencode.ai/config.json",
+                "permission": {"external_directory": "allow"},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
     """Build a fake home under `root`: install opencode, fkb skills, optionally kb.
 
@@ -192,6 +241,8 @@ def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
     candidates = sorted(npm_prefix.glob("node_modules/opencode-*/bin/opencode"))
     binaries = [c for c in candidates if c.is_file() and "baseline" not in c.parent.parent.name]
     opencode_bin = binaries[0] if binaries else candidates[0]
+
+    _write_opencode_config(home)
 
     fake = FakeHome(home=home, opencode_bin=opencode_bin, env=env)
     if with_kb:

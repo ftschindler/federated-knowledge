@@ -12,22 +12,26 @@ tags: [knowledge, okf, federation, fkb, ingest, capture]
 
 # fkb-ingest — classify, gate, delegate
 
+**THIS SKILL INSTRUCTS YOU TO EXECUTE AN INGEST.** Do not just read these instructions and stop.
+Follow the steps below to classify the source, gate disclosure, then **actually delegate** to kb-ingest.
+
 Wraps [kb-ingest](../fkb/SKILL.md#route-to-the-right-skill). fkb-ingest owns **which bundle** and
 **whether allowed**; `kb-ingest` owns the actual capture and integration into that one bundle.
 
 ## 1. Preflight (mandatory)
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs check-kb kb-ingest
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps kb-ingest
 ```
 
-Exit 4 → STOP; user runs `npx skills add stjbrown/agent-knowledge`. **Never hand-roll the ingest** —
-that bypasses OKF conformance and the trust model.
+Exit 4 → STOP; the message names what is missing — install `uv`, or run
+`npx skills add stjbrown/agent-knowledge` for the kb skills. **Never hand-roll the ingest** — that
+bypasses OKF conformance and the trust model.
 
 Load the bundle set:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs list
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list
 ```
 
 ## 2. Classify the target bundle — FAIL CLOSED
@@ -46,8 +50,9 @@ less reuse; a wrongly-public one is irreversible disclosure (git history keeps i
 
 Two checks, both must pass:
 
-1. **Writable gate.** The target must be `writable: true` (`manifest.mjs resolve <target>`). A
-   read-only upstream is a source, never a write target.
+1. **Writable gate.** The target must be `writable: true` (`manifest.py resolve <target>`). Use the
+   returned `resolved_path` for filesystem work. A read-only upstream is a source, never a write
+   target.
 2. **Disclosure gate.** If your classification places the source into a bundle **more open** than the
    sealed default (e.g. anything with `referenceable_by: "*"` or a published `publish` URL), this is
    irreversible disclosure → **require explicit human sign-off** before proceeding. State plainly:
@@ -59,7 +64,7 @@ Two checks, both must pass:
 If the new concept references another bundle B, enforce the leak rule first:
 
 ```bash
-node <fkb-dir>/fkb/scripts/manifest.mjs can-reference <target> <B>   # exit 0 allow / 1 deny
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference <target> <B>   # exit 0 allow / 1 deny
 ```
 
 Deny → do not write that link. Allow → emit the link as B's published URL if B has `publish`, else a
@@ -67,10 +72,22 @@ workspace-relative path (never a raw local absolute path). For a read-only upstr
 record the reference as an OKF `sources[]` provenance entry (its `publish` URL + a `last_modified`
 signal), so provenance survives a broken live link.
 
-## 5. Delegate the write to kb-ingest
+## 5. Hand off to kb-ingest (EXECUTE, don't just read)
 
-`cd` into `target.path` and invoke **kb-ingest** to do the actual capture — the concept file, and
-that bundle's own `index.md` / `log.md`. fkb writes nothing in the bundle itself.
+**CRITICAL**: This skill **instructs you to execute** kb-ingest. Do not just read these instructions
+and stop. You must **actually invoke** the kb-ingest skill:
+
+```text
+skill(name="kb-ingest", user_message="<describe the source and target>")
+```
+
+Then **execute the kb-ingest instructions** it returns — it will:
+
+- Create the concept file in the target bundle
+- Update that bundle's `index.md` and `log.md`
+- Ensure OKF conformance
+
+fkb writes nothing in the bundle itself — kb-ingest owns all bundle mutations.
 
 ## 6. Report
 
@@ -81,4 +98,6 @@ State the chosen bundle, why, whether a disclosure gate fired, and the concept p
 - Never write into a non-`writable` bundle.
 - Never place into a more-open bundle without human sign-off.
 - Never emit a cross-link that `can-reference` denies.
-- Never author bundle content directly — always via kb-ingest.
+- Never author bundle content directly — always invoke and execute kb-ingest.
+- **Do not skip executing kb-ingest** — the whole point of this skill is to classify and gate, then
+  **actually delegate** the write to kb-ingest.

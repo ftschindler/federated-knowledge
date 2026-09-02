@@ -19,19 +19,21 @@ responsibility needs the manifest; every `kb` responsibility is single-bundle an
 
 ## Prerequisites (check before anything)
 
-fkb delegates in prose to the `kb-*` skills — there is no code import, so a missing kb skill fails
-silently unless you check. **Every fkb skill's FIRST act is a preflight:**
+fkb delegates in prose to the `kb-*` skills and runs Python helpers through `uv`; missing
+dependencies fail silently unless you check. **Every fkb skill's FIRST act is a preflight:**
 
 ```bash
-node <fkb-skills-dir>/fkb/scripts/manifest.mjs check-kb
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" check-deps
 ```
 
-- exit 0 → all required kb skills (`kb`, `kb-init`, `kb-ingest`, `kb-query`, `kb-lint`) are installed.
-- exit 4 → STOP. Tell the user to run `npx skills add stjbrown/agent-knowledge`. **Do NOT hand-roll
-  the operation** — bypassing kb also bypasses OKF conformance.
+- exit 0 → `uv` and all required kb skills (`kb`, `kb-init`, `kb-ingest`, `kb-query`, `kb-lint`) are present.
+- exit 4 → STOP. The message names what is missing — install `uv`, or run
+  `npx skills add stjbrown/agent-knowledge` for the kb skills. **Do NOT hand-roll the operation** —
+  bypassing kb also bypasses OKF conformance.
 
-You also need a `workspace.okf.yaml` at the workspace root (copy `workspace.okf.yaml.example`).
-`manifest.mjs` searches upward for it.
+You also need a workspace. `install-glue` creates it at the fixed path
+`${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/workspace.okf.yaml` and copies `manifest.py`
+beside it; every command above resolves that fixed location, so it works from any directory.
 
 ## The manifest is the single source of truth
 
@@ -40,11 +42,18 @@ You also need a `workspace.okf.yaml` at the workspace root (copy `workspace.okf.
 through the deterministic helper:
 
 ```bash
-node .../fkb/scripts/manifest.mjs list                      # resolved bundles
-node .../fkb/scripts/manifest.mjs resolve <bundle>          # one bundle as JSON
-node .../fkb/scripts/manifest.mjs can-reference <from> <to> # exit 0 allow / 1 deny
-node .../fkb/scripts/manifest.mjs validate                  # manifest well-formed?
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" list                      # resolved bundles
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" resolve <bundle>          # one bundle as JSON
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" can-reference <from> <to> # exit 0 allow / 1 deny
+uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" validate                  # manifest well-formed?
 ```
+
+## OKF references are local
+
+Before deciding OKF conformance, read the local references that ship with this skill:
+
+- `references/okf-v0.2.md` — the normative subset fkb relies on.
+- `references/okf-minimal-bundle.md` — the exact minimal bundle shape `create-bundle` writes.
 
 ## The reference rule (leak control)
 
@@ -60,17 +69,30 @@ plain allow-list: no ranks, no ordering, so mutual peers (`peer ↔ team`) list 
 
 | You want to… | Use | What it adds over kb |
 |  -- -  |  - --  | --- |
-| Scaffold a new bundle + register it | **fkb-init** | runs `kb-init`, then adds the manifest line |
-| Capture/ingest a source into the right tier | **fkb-ingest** | classify → fail-closed → disclosure gate → delegate to `kb-ingest` |
-| Answer a question across all bundles | **fkb-query** | fan `kb-query` across bundles (read-all), merge, cite bundle-qualified |
-| Health-check conformance + cross-bundle leaks | **fkb-lint** | per-bundle `kb-lint` **plus** the `referenceable_by` + dangling-ref checks kb cannot do |
-| Move a concept to a more-open tier | **fkb-promote** | net-new; human-gated because disclosure is irreversible |
+| Scaffold a new bundle + register it | **fkb-init** | interactive setup: builds workspace, clones/creates/register bundles via helper scripts |
+| Capture/ingest a source into the right tier | **fkb-ingest** | classify by sensitivity → fail-closed → disclosure gate → **invoke & execute** `kb-ingest` |
+| Answer a question across all bundles | **fkb-query** | fan out to **invoke & execute** `kb-query` for each bundle, merge, cite bundle-qualified |
+| Health-check conformance + cross-bundle leaks | **fkb-lint** | read kb-lint skill docs, **run conformance script** for each bundle, **plus** cross-bundle `referenceable_by` leak checks |
+| Move a concept to a more-open tier | **fkb-promote** | net-new; human-gated disclosure → **invoke & execute** `kb-ingest` for the re-write |
+
+**Important**: The `fkb-*` skills **instruct you to execute** the `kb-*` skills. When you invoke an
+`fkb-*` skill, it returns instructions that tell you to **actually call** the corresponding `kb-*`
+skill (e.g., `skill(name="kb-query", user_message="...")`) and execute those instructions. Do not
+just read the `fkb-*` instructions and stop — you must perform the delegated work.
 
 ## Delegation discipline (do not violate)
 
-`fkb` decides **which bundle and whether allowed**; it must **never** edit a concept body, `index.md`,
-or `log.md` directly — always via `kb`. If you edit bundle content yourself, the layering rots and
-you lose OKF conformance, the trust model, and free upstream `kb` improvements.
+`fkb` decides **which bundle and whether allowed**; the `kb-*` skills do the actual work. The `fkb-*`
+skills **instruct you to invoke and execute** the corresponding `kb-*` skills:
+
+- `fkb-ingest` → tells you to call `skill(name="kb-ingest", ...)` and execute its instructions
+- `fkb-query` → tells you to call `skill(name="kb-query", ...)` for each bundle and execute
+- `fkb-lint` → read kb-lint skill docs, run conformance script for each bundle
+- `fkb-promote` → tells you to call `skill(name="kb-ingest", ...)` for the re-write
+
+**Never edit bundle content directly** based on `fkb-*` instructions — always follow through to the
+`kb-*` skill invocation. If you edit bundle content yourself, the layering rots and you lose OKF
+conformance, the trust model, and free upstream `kb` improvements.
 
 ## Read-all, write-one
 

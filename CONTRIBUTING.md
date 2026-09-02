@@ -1,19 +1,20 @@
 # Contributing
 
-This repo is a set of agent skills plus the dev tooling and tests that guard them. The `fkb-*`
-skills are plain files; the tests exercise the deterministic `manifest.mjs` core, the Python support
-scripts under `.scripts/`, and the skills end-to-end by driving a real `opencode` in an isolated fake
-home.
+## Local Dev Environment
 
-## System requirements
+### Prerequisites
 
-We require [uv](https://docs.astral.sh/uv/) and [Node.js](https://nodejs.org),
+We require
+
+- [uv](https://docs.astral.sh/uv/),
+- [Node.js](https://nodejs.org),
+
 and optionally [make](https://en.wikipedia.org/wiki/Make_(software)).
 
-> make is actually an optional convenience.
-> If not available, look up the rax uv or npm calls in the [Makefile](Makefile)
+> Using make is actually an optional convenience.
+> If not available: look up the raw uv or node calls in the [Makefile](Makefile)
 
-## Clone and bootstrap
+### Clone and bootstrap
 
 ```bash
 git clone https://github.com/ftschindler/federated-knowledge.git
@@ -21,9 +22,21 @@ cd federated-knowledge
 make bootstrap
 ```
 
-## Running the tests
+### Using the development version of the skills globally
 
-Run all available tests with:
+Simply symlink to these skills with:
+
+```bash
+mkdir -p ~/.agents/skills && \
+for ii in $(cd skills && ls -d *); do cd ~/.agents/skills/ && ln -s "${PWD}/skills/${ii}" .; cd - ; done
+```
+
+> Ensure to remove previously installed skills from the target location beforehand.
+
+### Running the tests
+
+This repo contains agents skills, scripts the skills invoke, and dev tooling around that.
+We provide tests for each, run all available ones with:
 
 ```bash
 make test
@@ -31,7 +44,7 @@ make test
 
 We can also run individual test layers.
 
-### testing node scripts
+#### testing node scripts
 
 Running the node tests is fast and deterministic:
 
@@ -39,7 +52,7 @@ Running the node tests is fast and deterministic:
 make test_node_scripts
 ```
 
-### testing python scripts
+#### testing python scripts
 
 Running the Python tests is fast and deterministic as well:
 
@@ -47,7 +60,7 @@ Running the Python tests is fast and deterministic as well:
 make test_python_scripts
 ```
 
-### testing the skills
+#### testing the skills
 
 Testing the skills themselves is slower and not deterministic:
 
@@ -75,7 +88,7 @@ which can be manually done as well:
 make fakehome
 ```
 
-## Before you push
+### Before you push
 
 Run the full pre-commit guard suite against every file (the same hooks that run on commit):
 

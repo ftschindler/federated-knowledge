@@ -1,0 +1,97 @@
+# DECISIONS — overnight implementation retro
+
+A record of what got built, the KISS calls I made where the design left a gap,
+and open questions for you. Written for a morning read-through. Nothing here
+blocks — everything is implemented, tested, and committed; this is where I ask
+for a sanity check on the judgement calls.
+
+## What shipped (7 commits, all green)
+
+The full foundation + bundle layer from the settled design:
+
+1. **`manifest.py`** — the Python core (replaces `manifest.mjs`). PEP 723 inline
+   deps (`ruamel.yaml`), run via `uv`. Fixed XDG workspace location
+   (`$FKB_WORKSPACE` > `~/.config/federated-knowledge/workspace.okf.yaml`, no
+   upward-search). `workspace_root` + path resolution (`~`-expand, absolute
+   as-is, relative under root, relative-without-root is an error). Preflight
+   broadened to `uv` + kb skills (`check-deps`). 5 read-only subcommands.
+2. **The writer** — `add_bundle()`: round-trip append preserving comments +
+   flow-style, duplicate = hard error, append-last so hand-sorting survives.
+3. **`install-glue`** — creates the config dir + starter manifest (proposed
+   `workspace_root`), copies the helper scripts to the config dir,
+   `--print-agents-block` emits the marker-wrapped agent block.
+4. **Three bundle commands** — `clone-bundle` (git clone + OKF-root discovery),
+   `add-bundle` (register in place), `create-bundle` (scaffold + register),
+   over a shared `_fkb_bundle.py`.
+5. **Skill migration** — `fkb-init` rewritten as the interactive orchestrator;
+   all 6 SKILL.md invocations point at `uv run ~/.config/.../manifest.py`;
+   `manifest.mjs` + its test deleted; README migrated.
+
+**Tests:** 56 pytest cases (unit + subprocess CLI + install-glue + bundle
+commands driven as a real user drives them). Full `prek --all-files` green.
+**Manual e2e verified:** install → create public/peer/team/private → clone an
+upstream (docs/ auto-discovered) → add an existing checkout → leak rule correct
+across all six bundles.
+
+## KISS fill-ins (gaps the design left; I picked the simplest correct option)
+
+These are the decisions you did NOT explicitly make — flag any you'd do differently:
+
+- **`check-kb` renamed to `check-deps`** — it now verifies `uv` too, so the old
+  name was wrong. Exit 4 preserved.
+- **Empty `bundles:` is now valid** — a freshly-installed workspace has zero
+  bundles. I relaxed the core so an empty (or `None`) `bundles:` is a valid
+  empty federation, not an error; a *missing* `bundles:` key stays an error. The
+  original "empty is error" test was inverted to lock the new contract.
+- **`create-bundle` scaffolds a minimal conformant OKF bundle directly**
+  (bundle-root `index.md` with `okf_version: "0.2"`, plus a reserved `log.md`).
+  `kb-init` is a skill (prose for an agent), not a callable binary, so the
+  standalone script owns the smallest conformant scaffold. The local OKF
+  references under `skills/fkb/references/` document the exact shape.
+- **Bundle commands are flag-driven, ask-if-absent, TTY-gated** — they prompt
+  only when stdin is a TTY; non-interactive (tests, or the skill passing flags)
+  takes the fail-closed default. This is how the `fkb-init` skill drives them.
+- **`_fkb_bundle.py` shared helper** — the three commands share manifest-location,
+  prompting, policy, and OKF-root-discovery logic rather than duplicating it.
+  `install-glue` copies it alongside the commands.
+- **OKF-root discovery** = shallowest `index.md`; on a tie at the same depth,
+  ask rather than guess (as designed).
+- **YAML width raised to 4096** so each flow-style bundle entry stays on one
+  line (ruamel wraps at ~80 by default, which was ugly). Cosmetic: ruamel also
+  drops the inner `{ x }` spaces to `{x}` — valid YAML, not worth fighting.
+- **Dropped the `test_node_scripts` Makefile target** — no `.mjs` tests remain.
+
+## Bug caught by end-to-end QA (worth noting for the retro)
+
+The unit tests passed while the actual user flow crashed: the bundle commands
+`import _fkb_bundle`, but `install-glue` did not copy that helper into the
+config dir — so every command failed with `ModuleNotFoundError` when run from
+where a real user runs them. The tests masked it by running the commands from
+the repo dir (helper beside them). Fix: copy the helper, AND harden the tests to
+drive the *installed* copies. Lesson reaffirmed: real usage is the gate, not a
+green unit suite.
+
+## Open questions for you
+
+1. **`--from .` dev-loop flag** is implemented in install-glue (copies scripts
+   from a repo checkout) but I did NOT wire the symlink-your-checkout dev flow
+   from the README's "Work on the skills" section into anything automated — it
+   stays the documented manual `ln -s` loop.
+
+2. **AGENTS.md block content** — I wrote the verbatim block (query-first,
+   ingest-to-capture, reference rule, promote-is-gated, preflight, graceful
+   skip). Give it a read in `install-glue`; it's the prose that lands in every
+   user's agent instructions, so your voice matters most there.
+
+3. **`fkb-lint` / `fkb-promote` / `fkb-ingest` / `fkb-query` SKILL.md** had their
+   factual pass done (invocations, exit codes, `resolved_path`, and upstream kb
+   hand-off verified). The remaining prose/voice pass is Felix's, tracked in
+   TODO.md.
+
+## What I deliberately did NOT touch
+
+- Your in-progress `README.md` ASCII-alignment edit — committed alongside the
+  README migration since it was the same file, but I made no other changes to
+  your wording.
+- The e2e `skills` test layer (`test_skills.py`) — updated its two `manifest.py`
+  references but did NOT run it (needs network + opencode install; slow).
