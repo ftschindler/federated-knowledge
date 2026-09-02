@@ -27,7 +27,8 @@ make bootstrap
 Simply symlink to these skills with:
 
 ```bash
-for ii in $(cd skills && ls -d *); do ln -s "${PWD}/skills/${ii}" "~/.agents/skills/${ii}"; done
+mkdir -p ~/.agents/skills && \
+for ii in $(cd skills && ls -d *); do cd ~/.agents/skills/ && ln -s "${PWD}/skills/${ii}" .; cd - ; done
 ```
 
 > Ensure to remove previously installed skills from the target location beforehand.
