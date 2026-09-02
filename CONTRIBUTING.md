@@ -24,69 +24,68 @@ make bootstrap
 
 ### Using the development version of the skills globally
 
-Simply symlink to these skills with:
+This repo ships no skills yet (see [DESIGN.md](DESIGN.md)). Once it does, symlink them into
+the location every harness reads:
 
 ```bash
 mkdir -p ~/.agents/skills && \
-for ii in $(cd skills && ls -d *); do cd ~/.agents/skills/ && ln -s "${PWD}/skills/${ii}" .; cd - ; done
+for ii in $(cd skills && ls -d *); do ln -s "${PWD}/skills/${ii}" ~/.agents/skills/; done
 ```
 
-> Ensure to remove previously installed skills from the target location beforehand.
+> Remove previously installed copies from the target location beforehand.
 
 ### Running the tests
 
-This repo contains agents skills, scripts the skills invoke, and dev tooling around that.
-We provide tests for each, run all available ones with:
+Two layers, both run by:
 
 ```bash
 make test
 ```
 
-We can also run individual test layers.
+#### Support scripts
 
-#### testing node scripts
-
-Running the node tests is fast and deterministic:
-
-```bash
-make test_node_scripts
-```
-
-#### testing python scripts
-
-Running the Python tests is fast and deterministic as well:
+Fast and deterministic, no network:
 
 ```bash
 make test_python_scripts
 ```
 
-#### testing the skills
+#### The end-to-end harness
 
-Testing the skills themselves is slower and not deterministic:
+Slower and non-deterministic, because it drives a real agent:
 
 ```bash
 make test_skills
 ```
 
-As we can only test the skills by letting them being carried out by an agent, these tests are move involved:
+These tests
 
-- they prepare a [throwaway agent environment](#a-throwaway-agent-environment)
-- invoke `opncode` with instructions involving the skills (the non-deterministic part)
-- carry out deterministic tests on the returned output and the created files
+- prepare a [throwaway agent environment](#a-throwaway-agent-environment),
+- invoke `opencode` with instructions (the non-deterministic part),
+- assert deterministically on the returned transcript and the created files.
 
-#### a throwaway agent environment
+While the repo has no skills of its own, this layer installs a canary skill authored by the
+test and checks that an agent discovers and follows it. That keeps every moving part of the
+harness exercised: the opencode install, the permission grant, skill discovery, activation
+and transcript parsing.
 
-The tests
+#### A throwaway agent environment
 
-- create a fake `HOME` environment,
-- install a pinned `opencode` into it (as that gives us an agent harness and free access to it's default LLM),
-- install the `fkb*` skills and (depending on the test) the required (`kb*`) skills
+The harness
 
-which can be manually done as well:
+- creates a fake `HOME` with all `XDG_*` redirected into it,
+- installs a pinned `opencode` (an agent harness plus free access to its default model),
+- copies skill directories from a given source into `~/.agents/skills`.
+
+Build one by hand and drop into a shell inside it:
 
 ```bash
-make fakehome
+make fakehome                          # this repo's skills, if any
+.scripts/fake-home.py --skills DIR     # skills from elsewhere
+.scripts/fake-home.py --no-skills      # opencode only
 ```
+
+On a test failure the fake home is preserved and the command to enter it is printed.
 
 ### Before you push
 
