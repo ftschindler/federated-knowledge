@@ -25,7 +25,7 @@ test_python_scripts: | guard-uvx
 
 ## Test the skills end-to-end by driving opencode in a fake home (slow, needs network)
 test_skills: | guard-node guard-npm guard-npx guard-uvx
-	uvx --with pytest pytest -v -m skills
+	uvx --with pytest $(shell uv run .scripts/extract-deps.py skills) pytest -v -m skills
 
 ## Run the full pre-commit guard suite against all files
 check: | guard-uvx
