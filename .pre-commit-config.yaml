@@ -131,11 +131,11 @@ repos:
   hooks:
   # The repo's own behavior lock — fail the commit if the fkb manifest
   # core or its helper scripts regress. Guard invariants at commit-time.
-  - id: fkb-manifest-tests
-    name: fkb manifest + helper tests
-    entry: uvx --with pytest --with ruamel.yaml pytest -q -m python_scripts
+  - id: support-script-tests
+    name: support script tests
+    entry: uvx --with pytest pytest -q -m python_scripts
     language: system
-    files: ^(skills/fkb/scripts/.*|tests/test_.*\.py)$
+    files: ^(\.scripts/.*\.py|tests/test_.*\.py)$
     pass_filenames: false
 
   # Every committed SKILL.md must be skills.sh-discoverable: name + description.
@@ -161,7 +161,7 @@ repos:
     entry: Filename must be lowercase with no whitespace
     language: fail
     files: "[\\sA-Z]"
-    exclude: "^(TODO\\.md|README\\.md|.*/README\\.md|CONTRIBUTING\\.md|DECISIONS\\.md|LICENSE|Makefile|SKILL\\.md|.*/SKILL\\.md)$"
+    exclude: "^(TODO\\.md|README\\.md|.*/README\\.md|CONTRIBUTING\\.md|DECISIONS\\.md|DESIGN\\.md|LICENSE|Makefile|SKILL\\.md|.*/SKILL\\.md)$"
 
 # ---- general text hygiene (run LAST so it cleans up after everything) --
 

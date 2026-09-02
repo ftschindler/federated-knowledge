@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  python_tests:
-    name: 🛠 (Python tests)
+  support_script_tests:
+    name: 🛠 (Support script tests)
     runs-on: ubuntu-latest
     timeout-minutes: 2  # something is off if we need more than this
     defaults:
@@ -31,15 +31,16 @@ jobs:
     - name: Setup uv
       uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
 
-    - name: Run Python tests
+    - name: Run support script tests
       run: make test_python_scripts
 
-  skills_tests:
-    name: 🛠 (Skills tests)
+  harness_tests:
+    name: 🛠 (E2E harness tests)
     runs-on: ubuntu-latest
-    # Seven e2e tests, each building a fake home and driving a real model: ~17 min
-    # locally. Anything past 25 is a problem, not a slow runner.
-    timeout-minutes: 25
+    # Two e2e tests: one builds a fake home, one additionally drives a real model.
+    # A run's duration swings with the tool path the model picks, so the cap is
+    # generous; anything past it is a problem, not a slow runner.
+    timeout-minutes: 15
     defaults:
       run:
         shell: bash -elo pipefail {0}
@@ -56,5 +57,5 @@ jobs:
     - name: Setup uv
       uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
 
-    - name: Run skills tests
+    - name: Exercise the e2e harness
       run: make test_skills

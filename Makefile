@@ -16,14 +16,14 @@ guard-%:
 		exit 1; \
 	}
 
-## Run all tests (python scripts + the fkb core/helpers, and skills e2e)
+## Run all tests (support scripts, and the e2e harness)
 test: test_python_scripts test_skills
 
-## Test the python scripts (support scripts + the fkb manifest core, fast, deterministic)
+## Test the support scripts under .scripts/ (fast, deterministic, no network)
 test_python_scripts: | guard-uvx
-	uvx --with pytest --with ruamel.yaml pytest -v -m python_scripts
+	uvx --with pytest pytest -v -m python_scripts
 
-## Test the skills end-to-end by driving opencode in a fake home (slow, needs network)
+## Exercise the e2e harness by driving opencode in a fake home (slow, needs network)
 test_skills: | guard-node guard-npm guard-npx guard-uvx
 	uvx --with pytest $(shell uv run .scripts/extract-deps.py skills) pytest -v -m skills
 
@@ -31,7 +31,7 @@ test_skills: | guard-node guard-npm guard-npx guard-uvx
 check: | guard-uvx
 	uvx prek run --all-files
 
-## Build a fake opencode home (fkb+kb) and drop into a shell for inspection
+## Build a fake opencode home and drop into a shell for inspection
 fakehome:
 	.scripts/fake-home.py
 
