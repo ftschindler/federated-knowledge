@@ -1,0 +1,19 @@
+tests/test_skills.py
+  s_6c5be8ceb038b8::t_b4887e3c4ce2d8 121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "71907f9ee8cd2f02c99cdce4d23d593a50b651c4",
+  "prompts": {},
+  "sessions": {
+    "s_6c5be8ceb038b8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_f9e733bf8ffeNT9V3wE304vIbQ",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
