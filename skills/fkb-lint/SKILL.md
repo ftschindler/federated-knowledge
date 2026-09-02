@@ -12,6 +12,9 @@ tags: [knowledge, okf, federation, fkb, lint, conformance]
 
 # fkb-lint — per-bundle conformance + cross-bundle leak audit
 
+**THIS SKILL INSTRUCTS YOU TO EXECUTE A LINT AUDIT.** Do not just read these instructions and stop.
+Follow the steps below to run conformance checks across all bundles.
+
 Wraps [kb-lint](../fkb/SKILL.md#route-to-the-right-skill) and adds the one class of check a
 single-bundle linter structurally cannot do: **cross-bundle** rules.
 
@@ -26,13 +29,14 @@ check-deps exit 4 → STOP; the message names what is missing — install `uv`, 
 `npx skills add stjbrown/agent-knowledge` for the kb skills.
 validate exit 2 → the manifest is malformed; fix it before linting bundles.
 
-## 2. Per-bundle conformance (delegate to kb-lint)
+## 2. Per-bundle conformance (EXECUTE the script)
 
-For **each** bundle in the manifest, run kb-lint's deterministic conformance script against its
-`resolved_path`:
+**CRITICAL**: Run the kb-lint conformance script for each bundle. Do not skip this step.
+
+Read the `kb-lint` skill docs, then execute for each bundle using the conformance script:
 
 ```bash
-node <kb-lint-dir>/scripts/conformance.mjs <bundle.resolved_path>
+node ~/.agents/skills/kb-lint/scripts/conformance.mjs <bundle.resolved_path>
 ```
 
 This catches within-bundle drift: frontmatter, reserved-file shape, broken *intra*-bundle links.

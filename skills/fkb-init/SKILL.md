@@ -27,8 +27,7 @@ Exit 4 → STOP. The message names what is missing — install `uv`, or run
 `npx skills add stjbrown/agent-knowledge` for the kb skills. Do not scaffold by hand.
 
 > If `manifest.py` is not yet installed under `${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/`,
-> the workspace has never been
-> initialised — step 2 handles this by running install-glue from the installed skill.
+> the workspace has never been initialised — step 2 handles this by running `install-glue`.
 
 ## 2. Build the workspace if absent
 
@@ -39,11 +38,15 @@ uv run "${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/manifest.py" valid
 ```
 
 - **Malformed / missing** → build it. Ask the user for a `workspace_root` (default
-  `~/.agents/knowledge`), then run install-glue from the installed skill:
+  `~/.agents/knowledge`), then run `install-glue` from the **`fkb` skill** (not `fkb-init`):
 
   ```bash
-  uv run <installed-fkb-skill-dir>/scripts/install-glue --root <workspace_root>
+  uv run ~/.agents/skills/fkb/scripts/install-glue --root <workspace_root>
   ```
+
+  **Note**: The helper scripts (`install-glue`, `clone-bundle`, `add-bundle`, `create-bundle`, `manifest.py`)
+  live in the `fkb` skill directory (`~/.agents/skills/fkb/scripts/`), not in `fkb-init`. After the first run,
+  they are copied to `${XDG_CONFIG_HOME:-$HOME/.config}/federated-knowledge/` and should be invoked from there.
 
   Then hand off the agent-instructions block (it is not written automatically):
 

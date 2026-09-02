@@ -69,17 +69,30 @@ plain allow-list: no ranks, no ordering, so mutual peers (`peer ↔ team`) list 
 
 | You want to… | Use | What it adds over kb |
 |  -- -  |  - --  | --- |
-| Scaffold a new bundle + register it | **fkb-init** | runs `kb-init`, then adds the manifest line |
-| Capture/ingest a source into the right tier | **fkb-ingest** | classify → fail-closed → disclosure gate → delegate to `kb-ingest` |
-| Answer a question across all bundles | **fkb-query** | fan `kb-query` across bundles (read-all), merge, cite bundle-qualified |
-| Health-check conformance + cross-bundle leaks | **fkb-lint** | per-bundle `kb-lint` **plus** the `referenceable_by` + dangling-ref checks kb cannot do |
-| Move a concept to a more-open tier | **fkb-promote** | net-new; human-gated because disclosure is irreversible |
+| Scaffold a new bundle + register it | **fkb-init** | interactive setup: builds workspace, clones/creates/register bundles via helper scripts |
+| Capture/ingest a source into the right tier | **fkb-ingest** | classify by sensitivity → fail-closed → disclosure gate → **invoke & execute** `kb-ingest` |
+| Answer a question across all bundles | **fkb-query** | fan out to **invoke & execute** `kb-query` for each bundle, merge, cite bundle-qualified |
+| Health-check conformance + cross-bundle leaks | **fkb-lint** | read kb-lint skill docs, **run conformance script** for each bundle, **plus** cross-bundle `referenceable_by` leak checks |
+| Move a concept to a more-open tier | **fkb-promote** | net-new; human-gated disclosure → **invoke & execute** `kb-ingest` for the re-write |
+
+**Important**: The `fkb-*` skills **instruct you to execute** the `kb-*` skills. When you invoke an
+`fkb-*` skill, it returns instructions that tell you to **actually call** the corresponding `kb-*`
+skill (e.g., `skill(name="kb-query", user_message="...")`) and execute those instructions. Do not
+just read the `fkb-*` instructions and stop — you must perform the delegated work.
 
 ## Delegation discipline (do not violate)
 
-`fkb` decides **which bundle and whether allowed**; it must **never** edit a concept body, `index.md`,
-or `log.md` directly — always via `kb`. If you edit bundle content yourself, the layering rots and
-you lose OKF conformance, the trust model, and free upstream `kb` improvements.
+`fkb` decides **which bundle and whether allowed**; the `kb-*` skills do the actual work. The `fkb-*`
+skills **instruct you to invoke and execute** the corresponding `kb-*` skills:
+
+- `fkb-ingest` → tells you to call `skill(name="kb-ingest", ...)` and execute its instructions
+- `fkb-query` → tells you to call `skill(name="kb-query", ...)` for each bundle and execute
+- `fkb-lint` → read kb-lint skill docs, run conformance script for each bundle
+- `fkb-promote` → tells you to call `skill(name="kb-ingest", ...)` for the re-write
+
+**Never edit bundle content directly** based on `fkb-*` instructions — always follow through to the
+`kb-*` skill invocation. If you edit bundle content yourself, the layering rots and you lose OKF
+conformance, the trust model, and free upstream `kb` improvements.
 
 ## Read-all, write-one
 

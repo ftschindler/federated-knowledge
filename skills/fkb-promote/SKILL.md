@@ -12,6 +12,9 @@ tags: [knowledge, okf, federation, fkb, promote, disclosure]
 
 # fkb-promote — human-gated disclosure move
 
+**THIS SKILL INSTRUCTS YOU TO EXECUTE A PROMOTION.** Do not just read these instructions and stop.
+Follow the steps below to gate disclosure, get confirmation, then **actually delegate** to kb-ingest.
+
 Net-new in the federation layer (no `kb-promote` upstream). Promotion is **one-directional and
 irreversible**: once a concept lands in a more-open bundle and is committed, its git history keeps it
 forever — demotion cannot un-leak it. This is exactly why ingest fails closed to the sealed bundle,
@@ -52,13 +55,22 @@ client/employer names, internal hostnames, codenames, secrets. `manifest.py` enf
 rule mechanically, but the semantic "is this prose safe to disclose" judgment is human. If anything
 is borderline, redact it in the promoted copy or abort and report.
 
-## 4. Hand off the re-write to kb-ingest
+## 4. Hand off the re-write to kb-ingest (EXECUTE, don't just read)
 
-Hand off to **kb-ingest** with the target bundle root set to `resolved_path`, so kb-ingest authors the
-concept into the target bundle (concept file + that bundle's `index.md` / `log.md`). Re-resolve any
-cross-links for the new home:
-each must satisfy `can-reference <target> <B>`; drop or re-point links the target is not allowed to
-make.
+**CRITICAL**: This skill **instructs you to execute** kb-ingest. Do not just read these instructions
+and stop. You must **actually invoke** the kb-ingest skill for the target bundle:
+
+```text
+skill(name="kb-ingest", user_message="Promote concept: <source path> → <target bundle>. Content: <paste concept content>")
+```
+
+Then **execute the kb-ingest instructions** it returns — it will:
+
+- Write the concept file into the target bundle
+- Update the target's `index.md` and `log.md`
+- Re-resolve cross-links for the new home (each must satisfy `can-reference <target> <B>`)
+
+kb-ingest owns all bundle mutations — fkb-promote never writes bundle content directly.
 
 ## 5. Decide the source copy
 
@@ -79,4 +91,6 @@ re-resolved, and the fate of the source copy.
 - Never promote without explicit human confirmation.
 - Never promote into a `writable:false` bundle.
 - Never carry a cross-link into the target that `can-reference` denies.
-- Never author the promoted concept directly — always hand off to kb-ingest.
+- Never author the promoted concept directly — always invoke and execute kb-ingest.
+- **Do not skip executing kb-ingest** — the whole point of this skill is to gate and confirm, then
+  **actually delegate** the re-write to kb-ingest.

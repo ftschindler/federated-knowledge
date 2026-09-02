@@ -12,6 +12,9 @@ tags: [knowledge, okf, federation, fkb, ingest, capture]
 
 # fkb-ingest — classify, gate, delegate
 
+**THIS SKILL INSTRUCTS YOU TO EXECUTE AN INGEST.** Do not just read these instructions and stop.
+Follow the steps below to classify the source, gate disclosure, then **actually delegate** to kb-ingest.
+
 Wraps [kb-ingest](../fkb/SKILL.md#route-to-the-right-skill). fkb-ingest owns **which bundle** and
 **whether allowed**; `kb-ingest` owns the actual capture and integration into that one bundle.
 
@@ -69,11 +72,22 @@ workspace-relative path (never a raw local absolute path). For a read-only upstr
 record the reference as an OKF `sources[]` provenance entry (its `publish` URL + a `last_modified`
 signal), so provenance survives a broken live link.
 
-## 5. Hand off to kb-ingest
+## 5. Hand off to kb-ingest (EXECUTE, don't just read)
 
-Hand off to **kb-ingest** with the target bundle root set to `resolved_path`. kb-ingest owns the
-actual capture — the concept file, and that bundle's own `index.md` / `log.md`. fkb writes nothing in
-the bundle itself.
+**CRITICAL**: This skill **instructs you to execute** kb-ingest. Do not just read these instructions
+and stop. You must **actually invoke** the kb-ingest skill:
+
+```text
+skill(name="kb-ingest", user_message="<describe the source and target>")
+```
+
+Then **execute the kb-ingest instructions** it returns — it will:
+
+- Create the concept file in the target bundle
+- Update that bundle's `index.md` and `log.md`
+- Ensure OKF conformance
+
+fkb writes nothing in the bundle itself — kb-ingest owns all bundle mutations.
 
 ## 6. Report
 
@@ -84,4 +98,6 @@ State the chosen bundle, why, whether a disclosure gate fired, and the concept p
 - Never write into a non-`writable` bundle.
 - Never place into a more-open bundle without human sign-off.
 - Never emit a cross-link that `can-reference` denies.
-- Never author bundle content directly — always hand off to kb-ingest.
+- Never author bundle content directly — always invoke and execute kb-ingest.
+- **Do not skip executing kb-ingest** — the whole point of this skill is to classify and gate, then
+  **actually delegate** the write to kb-ingest.
