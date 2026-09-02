@@ -1,0 +1,45 @@
+skills/fkb-query/SKILL.md
+  s_71e0a1231b0f4e::t_7454a677a000a8 15-17
+  s_71e0a1231b0f4e::t_6e5333f79a0940 38-59,61
+skills/fkb-init/SKILL.md
+  s_71e0a1231b0f4e::t_ad8ce24136167d 30,41,44,47-49
+skills/fkb/SKILL.md
+  s_71e0a1231b0f4e::t_18a40cae04244c 72-74,76-81
+  s_71e0a1231b0f4e::t_189472aa7e6af9 90
+  s_71e0a1231b0f4e::t_3abd496591962b 85-89,91-95
+  s_71e0a1231b0f4e::t_43807b3affdacb 75
+skills/fkb-promote/SKILL.md
+  s_71e0a1231b0f4e::t_7916aebcb9ca55 58-71
+  s_71e0a1231b0f4e::t_73c7f3c50bf712 15-17
+  s_71e0a1231b0f4e::t_c5138d4956dba2 94-95
+skills/fkb-lint/SKILL.md
+  s_71e0a1231b0f4e::t_32f10f2f5c8f1c 34
+  s_71e0a1231b0f4e::t_6ce21ff6234c3a 15-17
+  s_71e0a1231b0f4e::t_7e0d87e10d4a47 32,39
+  s_71e0a1231b0f4e::t_ba4c04c3ada645 36
+skills/fkb-ingest/SKILL.md
+  s_71e0a1231b0f4e::t_5c719a9b8e65b1 15-17
+  s_71e0a1231b0f4e::t_c0cd69c2239fa6 75-88
+  s_71e0a1231b0f4e::t_a11abc123a932b 101-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "5c69947b5fb310134ffd41e392882e28e8edcd1c",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_71e0a1231b0f4e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa89ce4f4ffedccthI14OANuFl",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
