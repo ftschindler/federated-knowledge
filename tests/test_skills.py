@@ -249,4 +249,4 @@ def test_fkb_init_places_managed_block_into_agent_instructions(kb_present_home: 
     assert "<!-- BEGIN fkb" in text
     assert "<!-- END fkb -->" in text
     assert "fkb-query" in text
-    assert "referenceable_by" in text
+    assert "fkb-ingest" in text

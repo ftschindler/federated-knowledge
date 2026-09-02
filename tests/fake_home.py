@@ -161,6 +161,30 @@ class FakeHome:
         )
 
 
+def _write_opencode_config(home: Path) -> None:
+    """Let the agent reach the fake home outside its working directory.
+
+    `opencode run` is non-interactive, so any permission prompt is auto-rejected.
+    The fkb skills live in `~/.agents/skills` and their glue in `~/.config`, both
+    outside the workdir, so without this every run dies on an `external_directory`
+    prompt before the skill can do — or refuse — anything. A real user grants this
+    once interactively; here we grant it up front.
+    """
+    config_dir = home / ".config" / "opencode"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    (config_dir / "opencode.json").write_text(
+        json.dumps(
+            {
+                "$schema": "https://opencode.ai/config.json",
+                "permission": {"external_directory": "allow"},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
     """Build a fake home under `root`: install opencode, fkb skills, optionally kb.
 
@@ -192,6 +216,8 @@ def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
     candidates = sorted(npm_prefix.glob("node_modules/opencode-*/bin/opencode"))
     binaries = [c for c in candidates if c.is_file() and "baseline" not in c.parent.parent.name]
     opencode_bin = binaries[0] if binaries else candidates[0]
+
+    _write_opencode_config(home)
 
     fake = FakeHome(home=home, opencode_bin=opencode_bin, env=env)
     if with_kb:
