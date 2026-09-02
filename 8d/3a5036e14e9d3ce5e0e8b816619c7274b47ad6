@@ -1,0 +1,28 @@
+Makefile
+  s_1aa0071a692a7e::t_627f69c8f0c18f 28
+.scripts/extract-deps.py
+  s_1aa0071a692a7e::t_072e3b23e200fe 51-53
+  s_1aa0071a692a7e::t_778a1eea0689a8 1-44,50,54-57
+  s_1aa0071a692a7e::t_b40fefdb8d912d 45-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "8d3a5036e14e9d3ce5e0e8b816619c7274b47ad6",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_1aa0071a692a7e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa88ec625ffeORJKS0Xo3s0VXy",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
