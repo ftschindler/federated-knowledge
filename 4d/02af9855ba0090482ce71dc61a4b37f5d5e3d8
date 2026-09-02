@@ -1,0 +1,19 @@
+TODO.md
+  s_71e0a1231b0f4e::t_00f585131f4412 74-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "4d02af9855ba0090482ce71dc61a4b37f5d5e3d8",
+  "prompts": {},
+  "sessions": {
+    "s_71e0a1231b0f4e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa89ce4f4ffedccthI14OANuFl",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
