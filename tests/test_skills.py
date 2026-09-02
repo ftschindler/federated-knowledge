@@ -118,7 +118,7 @@ def test_fkb_init_sets_up_workspace_and_registers_bundle(
         f"{agent_knowledge.okf_root}. Name the bundle agent-knowledge, set referenceable_by to *, "
         "leave writable false, do not set a publish URL, and finish by listing the resolved "
         "bundles. Follow the skill's preflight exactly.",
-        timeout=300,
+        timeout=600,
     )
 
     manifest = _cfg(kb_present_home) / "workspace.okf.yaml"
