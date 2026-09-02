@@ -71,3 +71,8 @@
 - [ ] add an update mechanism so invoking the skills discovers if there is an
       update to the skills
 - [ ] add pull/push convenience, or at least update detection for remote bundles
+- [ ] **Extend `create-bundle` to support a `--knowledge-subdir` flag** — allow
+      scaffolding OKF files (`index.md`, `log.md`) into a subdir (e.g. `knowledge/`)
+      rather than the bundle root. This matches the pattern used by git repos where
+      infrastructure lives at the root and OKF content is in a subdir. Update the
+      manifest registration to point to `<name>/<subdir>` when this flag is used.
