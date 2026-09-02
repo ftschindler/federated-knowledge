@@ -1,9 +1,13 @@
-"""Build an isolated fake HOME with opencode + the fkb/kb skills installed.
+"""Build an isolated fake HOME with opencode and a set of skills installed.
 
 Shared by the pytest fixtures (tests/conftest.py) and the convenience script
 (.scripts/fake-home.py) so there is exactly one definition of "how a fake home is
 built". Nothing here touches the developer's real machine: HOME and all XDG_* are
 redirected into the given root directory.
+
+The harness knows nothing about which skills it installs: `install_skills` takes a
+directory and copies whatever skill directories it finds. That keeps it usable
+across a rewrite of the skills themselves, which is exactly what it survived.
 """
 
 from __future__ import annotations
@@ -20,16 +24,16 @@ from pathlib import Path
 # frozen tool versions.
 OPENCODE_VERSION = "1.18.25"
 
-# The upstream kb skills the fkb layer delegates to.
-KB_REPO = "stjbrown/agent-knowledge"
-
 # One allowance for every agent run. A run is an LLM driving tools, so its duration
 # swings with the tool path it picks: tests that take ~60s locally have twice blown
 # a 300s cap on a CI runner. A genuinely stuck run is caught by the job timeout.
 AGENT_RUN_TIMEOUT = 600
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-FKB_SKILLS_DIR = REPO_ROOT / "skills"
+
+# Where this repo's own skills live once there are any. Absent during the design
+# stage, which `install_skills` tolerates rather than failing on.
+REPO_SKILLS_DIR = REPO_ROOT / "skills"
 
 
 def have(cmd: str) -> bool:
@@ -96,30 +100,28 @@ class FakeHome:
     def work(self) -> Path:
         return self.home / "work"
 
-    def install_fkb(self) -> None:
-        """Place the repo's fkb skills under ~/.agents/skills (as a user would)."""
-        self.agents_skills.mkdir(parents=True, exist_ok=True)
-        for skill in FKB_SKILLS_DIR.iterdir():
-            if skill.is_dir():
-                shutil.copytree(skill, self.agents_skills / skill.name, dirs_exist_ok=True)
+    def install_skills(self, source: Path) -> list[str]:
+        """Copy every skill directory under `source` into ~/.agents/skills.
 
-    def install_kb(self) -> None:
-        """Install the real kb skills into ~/.agents/skills only, via skills.sh."""
+        A skill is any subdirectory holding a SKILL.md, which is what the Agent
+        Skills spec makes discoverable. Returns the names installed; a missing or
+        empty `source` installs nothing and is not an error.
+        """
+        self.agents_skills.mkdir(parents=True, exist_ok=True)
+        if not source.is_dir():
+            return []
+        installed = []
+        for skill in sorted(source.iterdir()):
+            if not (skill / "SKILL.md").is_file():
+                continue
+            shutil.copytree(skill, self.agents_skills / skill.name, dirs_exist_ok=True)
+            installed.append(skill.name)
+        return installed
+
+    def install_from_registry(self, repo: str) -> None:
+        """Install a published skill set into ~/.agents/skills via skills.sh."""
         subprocess.run(
-            [
-                "npx",
-                "--yes",
-                "skills",
-                "add",
-                KB_REPO,
-                "--skill",
-                "*",
-                "-a",
-                "opencode",
-                "-g",
-                "-y",
-                "--copy",
-            ],
+            ["npx", "--yes", "skills", "add", repo, "--skill", "*", "-a", "opencode", "-g", "-y", "--copy"],
             check=True,
             env=self.env,
             cwd=self.home,
@@ -210,10 +212,11 @@ def _write_opencode_config(home: Path) -> None:
     )
 
 
-def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
-    """Build a fake home under `root`: install opencode, fkb skills, optionally kb.
+def build_fake_home(root: Path, *, skills_dir: Path | None = REPO_SKILLS_DIR) -> FakeHome:
+    """Build a fake home under `root`: install opencode, then the given skills.
 
     `root` must be a directory the caller owns; everything lives under `root/home`.
+    `skills_dir` defaults to this repo's own skills and may be absent.
     """
     home = root / "home"
     home.mkdir(parents=True, exist_ok=True)
@@ -245,8 +248,7 @@ def build_fake_home(root: Path, *, with_kb: bool) -> FakeHome:
     _write_opencode_config(home)
 
     fake = FakeHome(home=home, opencode_bin=opencode_bin, env=env)
-    if with_kb:
-        fake.install_kb()
-    fake.install_fkb()
+    if skills_dir is not None:
+        fake.install_skills(skills_dir)
     fake.work.mkdir(parents=True, exist_ok=True)
     return fake
