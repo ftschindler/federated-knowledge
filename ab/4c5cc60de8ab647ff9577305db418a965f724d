@@ -1,0 +1,14 @@
+CONTRIBUTING.md
+  h_0f8f9341a40674 30-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "ab4c5cc60de8ab647ff9577305db418a965f724d",
+  "prompts": {},
+  "humans": {
+    "h_0f8f9341a40674": {
+      "author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
