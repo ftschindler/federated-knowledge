@@ -1,0 +1,22 @@
+tests/fake_home.py
+  s_6c5be8ceb038b8::t_5aac228312ab62 220-221
+  s_6c5be8ceb038b8::t_a920200a36f49f 164-187
+tests/test_skills.py
+  s_6c5be8ceb038b8::t_beefbe13c70a50 252
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "5f28dcac4afabb238a3c8cda7211289a235a06fb",
+  "prompts": {},
+  "sessions": {
+    "s_6c5be8ceb038b8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_f9e733bf8ffeNT9V3wE304vIbQ",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
