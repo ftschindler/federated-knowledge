@@ -311,6 +311,7 @@ short and almost entirely control flow, well under 500 lines.
     ├── SPEC.md                 # vendored verbatim OKF v0.2 (§8)
     ├── APACHE-2.0.txt          # vendored — licence for SPEC.md
     ├── concept-template.md     # vendored, lightly adapted
+    ├── getting-started.md      # ours — onboarding (§6.7)
     ├── house-style.md          # ours
     └── federation.md           # ours
 ```
@@ -448,6 +449,36 @@ the optional OKF fields earn their keep: without them, lint has nothing to check
 
 ---
 
+### 6.7 The skill explains itself
+
+Someone runs `npx skills add …`, opens a fresh session and asks "what is this, and how do I
+start?". That question must be answerable from the skill alone, with no README, no web page
+and no prior context. A skill that needs documentation elsewhere has failed the one job that
+distinguishes it from a library.
+
+**The user story, from the previous README.** Someone wants their agent to read from and
+write into any combination of:
+
+1. bundles that live in remote git repos, readable or writable;
+2. bundles already checked out somewhere on disk, possibly without realising they are
+   bundles;
+3. bundles that do not exist yet, to share or to keep private.
+
+Those three are how a bundle arrives, and they map onto the setup commands (§7).
+
+**What the skill answers.** `SKILL.md` carries a short "new here?" branch that explains what
+a bundle is, checks whether a workspace exists, and routes to the right first step.
+`references/getting-started.md` carries the long form: the three arrival paths worked
+through, what each manifest field means, and what to do first when nothing is configured.
+
+> The split follows §6.1. "Do you have a workspace yet?" is a branch and belongs in the
+> body. "Here is each arrival path in full" is a lookup and belongs in the reference.
+
+**The acceptance test is behavioural**, and worth writing down because it is easy to fake:
+a session with no prior context, given only the question, produces an accurate explanation
+and a first command that works. Not a summary of the design — a next step the person can
+run.
+
 ## 7. The CLI
 
 Five commands, and we stay suspicious of the sixth. Single-file PEP 723 Python, run through
@@ -458,11 +489,33 @@ fkb list                    # bundles, paths, tiers, publish URLs
 fkb search <query>          # ripgrep across bundles, bundle-qualified hits
 fkb lint [bundle]           # vendored OKF validator plus the bundle's floor
 fkb resolve <bundle>        # one bundle as JSON: policy plus observed vocabulary
-fkb init | fkb add <path>   # setup, run once by a human
+fkb init                    # create the workspace manifest — once per machine
+fkb add <what>              # bring a bundle into the workspace — once per bundle
 ```
 
 `can-reference` folds into `lint`, being a check rather than a workflow. Clone, pull, commit
 and file creation get no command, since git and the editor already do them clearly.
+
+### Setup is two steps, because they answer different questions
+
+`fkb init` creates the workspace: the manifest file, with `workspace_root` and no bundles.
+It runs once per machine and asks nothing about knowledge.
+
+`fkb add` brings one bundle in, and covers the three ways a bundle arrives (§6.7):
+
+| Arrival | What `add` does |
+| --- | --- |
+| A remote git repo | Clone it under `workspace_root`, find the bundle root inside it, register it |
+| An existing local checkout | Register the path as-is, absolute, moving nothing |
+| A bundle that does not exist yet | Scaffold a minimal conformant bundle, register it writable and sealed |
+
+Each asks for the policy it cannot infer — `referenceable_by`, `writable`, `publish` — and
+ends by printing the manifest line it wrote, so what entered the federation is visible
+before it is used.
+
+> Finding the bundle root matters more than it sounds. A repo is often infrastructure at the
+> top with the bundle in `docs/`, so `add` inspects the checkout for the shallowest
+> `index.md` and asks when the answer is ambiguous rather than guessing.
 
 ### `fkb resolve` reports what a bundle *does*, not only what it declares
 
@@ -873,6 +926,9 @@ links resolve, and the unresolved-link list is empty or consciously accepted.
 - Implement `search` if the journal earned it, in pure Python unless §9.7 says otherwise.
   Output must be bundle-qualified, and a published bundle's hits must render as URLs.
 - Add `resolve`'s vocabulary reporting if the journal shows style mismatches (§7).
+- Implement `fkb init` and `fkb add` with its three arrival paths (§7). Until now the
+  workspace was hand-written; T7 introduces a second bundle and a real user, so setup stops
+  being a one-off.
 
 **Done when.** Every built command runs against the migrated bundle and at least one
 read-only upstream, and the tests drive the installed copy rather than the source tree.
@@ -883,17 +939,25 @@ read-only upstream, and the tests drive the installed copy rather than the sourc
 
 ### T5 — Finish the skill
 
-**Goal.** Extend the filing-only skill of T2 into the full one.
+**Goal.** Extend the filing-only skill of T2 into the full one, including onboarding.
 
 **Steps.**
 
 - Add the query workflow and the semantic lint checklist (§6.5).
+- Add the "new here?" branch to `SKILL.md` and write `references/getting-started.md`
+  (§6.7). Take the three arrival paths from the previous `README.md` before T7 deletes it.
 - Add `references/house-style.md` and `references/federation.md`.
 - Fold whatever the journal revealed about the filing instructions back into `SKILL.md`.
 
-**Done when.** A cold session, given only a question, finds the skill, reads a concept and
-cites it; and given only "note this down", files a conformant concept that passes `fkb lint`
-without correction.
+**Done when.** Three cold-session tests pass, each starting with no prior context:
+
+1. Given a question, the agent finds the skill, reads a concept and cites it.
+2. Given "note this down", it files a conformant concept that passes `fkb lint` uncorrected.
+3. Given "what is this and how do I start?" on a machine with **no workspace configured**,
+   it explains what a bundle is and gives a first command that runs (§6.7).
+
+The third test is the one that fails quietly. A plausible summary of the design is not a
+pass; a next step the person can run is.
 
 **Leave alone.** §9.6 — the skill reads a bundle's style, it does not impose one.
 
@@ -927,7 +991,9 @@ and `fkb lint` reports the same finding on the same file.
 - Exercise the reference rule: confirm a private-to-public link is refused and a
   public-to-public link is allowed.
 - Tag the current architecture on an archival branch, then delete the six `fkb-*` skills,
-  `manifest.py`, `install-glue` and the bundle commands.
+  `manifest.py`, `install-glue` and the bundle commands. The old `README.md`'s user story is
+  already preserved in §6.7 and in `references/getting-started.md`; confirm that before
+  deleting.
 - Rewrite `README.md` and `DECISIONS.md` to describe what now exists. Fold `JOURNAL.md`
   into `DECISIONS.md` and delete it.
 
