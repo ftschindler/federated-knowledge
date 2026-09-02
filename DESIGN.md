@@ -801,6 +801,12 @@ A fresh session needs four things, none of which live in this repository.
 Everything else — the manifest schema (§4), the AGENTS.md block (§5.4), the skill layout
 (§6.2), the command set (§7) — is specified in this document.
 
+One thing this repository *does* provide: `tests/fake_home.py` and `tests/conftest.py` build
+an isolated HOME, install a pinned opencode, copy skill directories into `~/.agents/skills`
+and drive `opencode run`, returning a parsed transcript. It survived the previous
+architecture because it is independent of what it drives. Use it for T2's skill tests rather
+than rebuilding it; `tests/test_harness.py` shows the shape.
+
 ---
 
 ### T1 — Prepare the bundle, empty
@@ -990,18 +996,11 @@ and `fkb lint` reports the same finding on the same file.
 - Populate the manifest with both bundles plus at least one read-only upstream.
 - Exercise the reference rule: confirm a private-to-public link is refused and a
   public-to-public link is allowed.
-- Tag the current architecture on an archival branch, then delete the six `fkb-*` skills,
-  `manifest.py`, `install-glue` and the bundle commands. The old `README.md`'s user story is
-  already preserved in §6.7 and in `references/getting-started.md`; confirm that before
-  deleting.
-- Rewrite `README.md` and `DECISIONS.md` to describe what now exists. Fold `JOURNAL.md`
-  into `DECISIONS.md` and delete it.
+- Fold `JOURNAL.md` into a decisions record and delete it.
+- Update `README.md` to describe what now exists rather than what is planned.
 
 **Done when.** The repository contains this design, the CLI, the skill, the hook and their
 tests, and nothing describing the previous architecture except Appendix A.
-
-> This discards 20 commits and 56 green tests. Green tests do not make deleted architecture
-> valuable; they are sunk cost, not a constraint.
 
 ---
 
@@ -1010,6 +1009,10 @@ tests, and nothing describing the previous architecture except Appendix A.
 - **The stale AGENTS.md block is removed** from `~/.config/opencode/AGENTS.md`
   (2026-09-02). Cold sessions currently get no wiki instructions at all, which is correct
   until T4 gives them something true to say.
+- **The retired architecture is deleted** (2026-09-02): the six `fkb-*` skills,
+  `manifest.py`, `install-glue`, the bundle commands and their tests. The last working
+  state is preserved in git history, and what it cost is Appendix A. The e2e harness was
+  kept.
 
 ---
 
