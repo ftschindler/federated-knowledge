@@ -23,6 +23,11 @@ OPENCODE_VERSION = "1.18.25"
 # The upstream kb skills the fkb layer delegates to.
 KB_REPO = "stjbrown/agent-knowledge"
 
+# One allowance for every agent run. A run is an LLM driving tools, so its duration
+# swings with the tool path it picks: tests that take ~60s locally have twice blown
+# a 300s cap on a CI runner. A genuinely stuck run is caught by the job timeout.
+AGENT_RUN_TIMEOUT = 600
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FKB_SKILLS_DIR = REPO_ROOT / "skills"
 
@@ -61,6 +66,18 @@ class OpencodeResult:
             if ev.get("type") == "text" and "text" in part:
                 chunks.append(part["text"])
         return "\n".join(chunks)
+
+
+class OpencodeTimeoutError(AssertionError):
+    """An `opencode run` that outlived its allowance, carrying its partial transcript."""
+
+
+def _timeout_report(partial: OpencodeResult, timeout: int) -> str:
+    return (
+        f"opencode run exceeded {timeout}s and was killed.\n"
+        f"--- assistant transcript so far ---\n{partial.text.strip() or '(none)'}\n"
+        f"--- stderr ---\n{partial.stderr.strip() or '(empty)'}"
+    )
 
 
 @dataclass
@@ -111,20 +128,28 @@ class FakeHome:
             timeout=300,
         )
 
-    def run(self, message: str, *, cwd: Path | None = None, timeout: int = 180) -> OpencodeResult:
+    def run(self, message: str, *, cwd: Path | None = None, timeout: int = AGENT_RUN_TIMEOUT) -> OpencodeResult:
         """Drive `opencode run` non-interactively and capture parsed JSON events."""
         workdir = cwd or self.work
         workdir.mkdir(parents=True, exist_ok=True)
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             [str(self.opencode_bin), "run", "--format", "json", message],
             env=self.env,
             cwd=workdir,
-            capture_output=True,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout,
-            check=False,
         )
-        return OpencodeResult.parse(proc.stdout, proc.stderr, proc.returncode, workdir)
+        try:
+            stdout, stderr = proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            stdout, stderr = proc.communicate()
+            raise OpencodeTimeoutError(
+                _timeout_report(OpencodeResult.parse(stdout, stderr, -9, workdir), timeout)
+            ) from None
+        return OpencodeResult.parse(stdout, stderr, proc.returncode, workdir)
 
     @property
     def enter_command(self) -> str:

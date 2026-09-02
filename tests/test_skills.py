@@ -73,7 +73,6 @@ def test_kb_absent_is_loud_and_writes_nothing(kb_absent_home: FakeHome) -> None:
         "Use the fkb-ingest skill to capture this note into the knowledge base: "
         "'The deploy runbook lives in the ops wiki.' "
         "Follow the skill's preflight exactly.",
-        timeout=240,
     )
     combined = (result.text + result.stderr).lower()
     # The skill's preflight tells the user to install the kb skills.
@@ -87,7 +86,6 @@ def test_fkb_skills_are_discovered(kb_present_home: FakeHome) -> None:
     """Sanity: with kb present, opencode sees the full fkb + kb skill set."""
     result = kb_present_home.run(
         "List every skill you have available whose name starts with 'fkb', one per line. Do not use any tools.",
-        timeout=180,
     )
     text = result.text.lower()
     for skill in ("fkb", "fkb-ingest", "fkb-init", "fkb-query", "fkb-lint", "fkb-promote"):
@@ -118,7 +116,6 @@ def test_fkb_init_sets_up_workspace_and_registers_bundle(
         f"{agent_knowledge.okf_root}. Name the bundle agent-knowledge, set referenceable_by to *, "
         "leave writable false, do not set a publish URL, and finish by listing the resolved "
         "bundles. Follow the skill's preflight exactly.",
-        timeout=600,
     )
 
     manifest = _cfg(kb_present_home) / "workspace.okf.yaml"
@@ -163,7 +160,6 @@ def test_fkb_query_answers_from_known_bundle_with_bundle_qualified_citation(
         "Use the fkb-query skill to answer this across all configured bundles and cite every hit "
         "bundle-qualified: What is Karpathy's LLM wiki idea?",
         cwd=kb_present_home.work,
-        timeout=300,
     )
 
     output = (result.stdout + result.stderr).lower()
@@ -205,7 +201,6 @@ def test_fkb_ingest_keeps_sensitive_note_out_of_public_bundle(
         "public-disclosure confirmation because the correct destination is sealed and unpublished, "
         "and finish the capture with a short report. Follow the skill's preflight exactly.",
         cwd=kb_present_home.work,
-        timeout=300,
     )
 
     public_after = _markdown_files(public_root)
@@ -234,7 +229,6 @@ def test_fkb_init_places_managed_block_into_agent_instructions(kb_present_home: 
         "install-glue with --print-agents-block, then place the exact managed block into this file: "
         f"{agents_file}. Keep the BEGIN and END markers intact.",
         cwd=kb_present_home.home,
-        timeout=300,
     )
 
     instructions = _instruction_file(kb_present_home)
