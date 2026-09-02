@@ -1,0 +1,22 @@
+DESIGN.md
+  s_9c8c924bff1eb4::t_66b92a342cae67 314
+  s_9c8c924bff1eb4::t_2249ea5784b2cd 492-493,499-518
+  s_9c8c924bff1eb4::t_d811cd66c99a82 929-931,942,947-948,952-960
+  s_9c8c924bff1eb4::t_4501f344aeb26e 994-996
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "b327fa74e5e41a549d15bb559986e5f304554d88",
+  "prompts": {},
+  "sessions": {
+    "s_9c8c924bff1eb4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_fa389e5cfffedV6nhStn6fKrS2",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
