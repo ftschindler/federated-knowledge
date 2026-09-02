@@ -1,0 +1,20 @@
+.github/workflows/tests.yml
+  s_6c5be8ceb038b8::t_4864675c540770 40-41
+  s_6c5be8ceb038b8::t_8739e165bd6c0d 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "5eb31bc86ef00e2c9fc014ade737188237833123",
+  "prompts": {},
+  "sessions": {
+    "s_6c5be8ceb038b8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_f9e733bf8ffeNT9V3wE304vIbQ",
+        "model": "unknown"
+      },
+      "human_author": "Felix Schindler <107669806+ftschindler@users.noreply.github.com>"
+    }
+  }
+}
