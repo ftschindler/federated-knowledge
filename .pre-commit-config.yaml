@@ -23,7 +23,7 @@ repos:
 # JavaScript (.mjs) — lint + format in one pass. Biome CLI pinned via
 # additional_dependencies so the toolchain is reproducible.
 - repo: https://github.com/biomejs/pre-commit
-  rev: 19865851e014cbe6138e295365f95ca51bf953f8  # frozen: v0.6.1
+  rev: c4d01b70e92b66e6a88739145624279889634e92  # frozen: v2.5.11
   hooks:
   - id: biome-check
     # Biome only auto-discovers biome.json(c); a hidden .biome.json must be
